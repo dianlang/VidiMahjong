@@ -19,7 +19,7 @@
     }
     const controller={isPaused:paused,holdUntil(deadline){
       if(disposed||!Number.isFinite(deadline)||deadline<=Date.now())return;
-      until=Math.max(until,Math.min(deadline,Date.now()+60000));
+      until=Math.max(until,Math.min(deadline,Date.now()+120000));
       // The unmodified watchdog must not invalidate a deferred bot callback.
       match._lastProgressAt=Number.MAX_SAFE_INTEGER;
       clearTimeout(timer);timer=setTimeout(release,Math.max(0,until-Date.now()));

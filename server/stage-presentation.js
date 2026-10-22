@@ -16,7 +16,7 @@ function install(Room){
     const freshWin=settlement&&settlement.id!==this._presentationSettlement&&['tsumo','ron'].includes(settlement.type);
     if(settlement)this._presentationSettlement=settlement.id;
     const lead=freshWin?Math.max(0,settlement.startedAt+Settlement.SCORE_DURATION_MS-Date.now()):0;
-    const changes=this.cumulativeLosses.flatMap((loss,seat)=>stage(loss)>stage(before[seat])?[{seat,previousStage:stage(before[seat]),stage:stage(loss)}]:[]);
+    const changes=this.cumulativeLosses.flatMap((loss,seat)=>Array.from({length:Math.max(0,stage(loss)-stage(before[seat]))},(_,index)=>({seat,previousStage:stage(before[seat])+index,stage:stage(before[seat])+index+1})));
     if(changes.length||lead){
       const previous=this._stagePresentation;
       const until=Math.max(Date.now(),previous?.until||0)+changes.length*Pause.DURATION_MS;

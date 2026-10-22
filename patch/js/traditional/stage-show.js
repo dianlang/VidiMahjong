@@ -7,10 +7,11 @@
   const idle=[];
   const make=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text)e.textContent=text;return e;};
   function whenIdle(){return active||queue.length?new Promise(resolve=>idle.push(resolve)):Promise.resolve();}
-  function stopAudio(){for(const audio of [voice,sfx])if(audio){audio.pause();audio.removeAttribute('src');}voice=null;sfx=null;}
+  function stopAudio(){for(const audio of [voice,sfx])if(audio){audio.pause();audio.removeAttribute('src');}voice=null;sfx=null;window.QueYeVoices?.endStage();}
   function play(item){
     try{if(localStorage.getItem('vidimahjong-character-voice')==='off')return;}catch(_){}
     sfx=new Audio(`assets/sfx/stage-${item.stage}.wav`);sfx.volume=.22;sfx.play().catch(()=>{});
+    if(window.QueYeVoices){window.QueYeVoices.stage(item);return;}
     const start=extension=>{
       if(active!==item)return;
       const audio=new Audio(`assets/characters/${item.characterId}/voice/stage-${item.stage}.${extension}`);voice=audio;
@@ -45,7 +46,10 @@
   }
   function next(){
     if(active||!queue.length)return;
-    queue.sort((a,b)=>a.seat-b.seat);active=queue.shift();const item=active;
+    queue.sort((a,b)=>a.seat-b.seat||a.stage-b.stage);
+    while(queue.length&&queue[0].endsAt&&queue[0].endsAt<=Date.now())queue.shift();
+    if(!queue.length){finish();return;}
+    active=queue.shift();const item=active;
     ensureDialog();opener=opener||document.activeElement;
     dialog.classList.remove('is-running','is-missing-art');
     const name=registry.get(item.characterId).name;
@@ -56,7 +60,10 @@
     const before=dialog.querySelector('.qy-stage-before'),after=dialog.querySelector('.qy-stage-after');
     before.hidden=false;after.hidden=false;before.src=registry.stagePath(item.characterId,item.previousStage);after.src=registry.stagePath(item.characterId,item.stage);after.alt=`${name}阶段 ${item.stage} 立绘`;
     const length=Math.max(1,Math.min(duration,item.endsAt?item.endsAt-Date.now():duration));
+    item.elapsedMs=duration-length;item.voiceLimit=length;
     dialog.style.setProperty('--show-duration',`${length}ms`);
+    dialog.style.setProperty('--stage-duration',`${duration}ms`);
+    dialog.style.setProperty('--stage-offset',`${-item.elapsedMs}ms`);
     if(!dialog.open)dialog.showModal();
     // Restart CSS animation without animation libraries or a browser fullscreen permission prompt.
     void dialog.offsetWidth;dialog.classList.add('is-running');play(item);timer=setTimeout(finish,length);
@@ -68,8 +75,10 @@
     owner=match;pause=QueYeMatchPause.attach(owner);
     const settlement=owner._queYeSettlement;
     const lead=!active&&!queue.length&&settlement&&owner.engine.phase==='ended'&&['ron','tsumo'].includes(settlement.type)?Math.max(0,settlement.startedAt+QueYeSettlement.SCORE_DURATION_MS-Date.now()):0;
-    localDeadline=Math.max(Date.now(),localDeadline)+duration+lead;pause.holdUntil(localDeadline+500);
-    queue.push({...item});
+    const count=item.stage-item.previousStage;
+    if(count<1)return;
+    localDeadline=Math.max(Date.now(),localDeadline)+duration*count+lead;pause.holdUntil(localDeadline+500);
+    for(let stage=item.previousStage+1;stage<=item.stage;stage++)queue.push({...item,previousStage:stage-1,stage});
     if(!active&&!startTimer){if(lead)startTimer=setTimeout(()=>{startTimer=null;next();},lead);else queueMicrotask(next);}
   }
   function cancel(mode){
@@ -86,7 +95,7 @@
     if(!show||show.remainingMs<=0){if(active?.mode==='online'||queue.some(i=>i.mode==='online'))cancel('online');return;}
     if(show.revision===onlineRevision)return;
     cancel('online');onlineRevision=show.revision;
-    const changes=show.changes.filter(c=>Number.isInteger(c.seat)&&c.seat>=0&&c.seat<4&&c.stage>=1&&c.stage<=4).sort((a,b)=>a.seat-b.seat);
+    const changes=show.changes.filter(c=>Number.isInteger(c.seat)&&c.seat>=0&&c.seat<4&&c.stage>=1&&c.stage<=4).sort((a,b)=>a.seat-b.seat||a.stage-b.stage);
     const elapsed=Math.max(0,changes.length*duration-show.remainingMs);
     changes.forEach((change,index)=>{
       if((index+1)*duration<=elapsed)return;

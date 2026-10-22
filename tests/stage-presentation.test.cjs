@@ -38,7 +38,7 @@ test('hand-end publishes existing final payments before loss tracking and delays
  try{
   room.start();const g=room.match.engine;g.phase='ended';g.result={type:'ron',discarder:0,winners:[{seat:1,total:8000}]};room.match.finishHand();
   const state=room.buildStateFor(0);assert.deepEqual(Array.from(state.points),[17000,33000,25000,25000]);assert.deepEqual(Array.from(state.seats,s=>s.points),[17000,33000,25000,25000]);
-  assert.deepEqual(state.cumulativeLosses,[8000,0,0,0]);assert.equal(state.stagePresentation.changes[0].stage,2);assert.ok(state.stagePresentation.delayMs>1000);assert.equal(state.settlement.before[0],25000);assert.equal(state.settlement.after[0],17000);
+  assert.deepEqual(state.cumulativeLosses,[8000,0,0,0]);assert.deepEqual(state.stagePresentation.changes.map(c=>[c.previousStage,c.stage]),[[0,1],[1,2]]);assert.ok(state.stagePresentation.delayMs>1000);assert.equal(state.settlement.before[0],25000);assert.equal(state.settlement.after[0],17000);
   room.handleMessage(room.seats[0].ws,{type:'nextHand'});assert.equal(room.match.handNumber,1);
   room.match.finishHand();assert.deepEqual(Array.from(room.match.points),[17000,33000,25000,25000]);assert.equal(room.match._queYeSettlement.id,1);
  }finally{room.destroy();}
