@@ -50,6 +50,7 @@
 .qy-test-presets { display:flex; flex-wrap:wrap; gap:4px; margin:12px 0; }
 .qy-test-presets .qy-filter { font-size:10px; padding:6px; }
 .qy-test-music { margin-top:20px; }
+.qy-test-force { margin-top:20px; }
 .qy-test-music .qy-filter { margin-right:7px; }
 @media(max-width:1150px) and (min-width:601px) { .qy-table .opponent-panel:nth-child(1) .opponent-discards { right:calc(100% + 5px); } .qy-table .opponent-panel:nth-child(3) .opponent-discards { left:calc(100% + 5px); } }
 @media(max-width:600px) {

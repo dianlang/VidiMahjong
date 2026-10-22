@@ -52,6 +52,19 @@
       reactionQueue.length=0;reactionModalOpen=false;closeAllModals();
       document.getElementById('btn-mode-local').click();document.getElementById('btn-start-match').click();message.textContent='新的本地测试局已开始，累计失分和阶段已重置。';
     });simulation.append(start,make('p','qy-test-hint','新开测试局会替换当前本地对局。输赢转移保持总点数不变，可连续模拟跨越 3000 / 8000 / 15000 / 25000 的累计失分阈值。'));
+    const force=make('section','qy-test-section qy-test-force');force.id='qy-test-force-win';force.append(make('h3','','指定玩家和牌'));dialog.append(force);
+    const winSeat=field(force,'获胜座位',select(['东家','南家','西家','北家'].map((n,i)=>[i,n])));winSeat.value='1';
+    const loseSeat=field(force,'放铳座位',select(['东家','南家','西家','北家'].map((n,i)=>[i,n])));
+    const method=field(force,'和牌方式',select([['ron','荣和'],['tsumo','自摸']]));
+    const shape=field(force,'测试手牌',select([['chinitsu','清一色'],['chiitoitsu','七对子'],['kokushi','国士无双 · 役满']]));
+    method.addEventListener('change',()=>{loseSeat.disabled=method.value==='tsumo';});
+    const forcedMessage=make('output','qy-test-message');forcedMessage.id='qy-forced-win-message';forcedMessage.setAttribute('aria-live','polite');
+    const forceWin=make('button','btn btn-primary','让此席和牌');forceWin.type='button';forceWin.addEventListener('click',()=>{
+      if(online){forcedMessage.textContent='联机房间不能指定和牌，请使用本地测试局。';return;}
+      if(typeof match==='undefined'||!match?.engine){forcedMessage.textContent='请先新开本地测试局。';return;}
+      if(QueYeMatchPause.attach(match).isPaused()){forcedMessage.textContent='演出进行中，请结束或跳过演出后再试。';return;}
+      try{QueYeTestHands.win(match,{winner:Number(winSeat.value),from:Number(loseSeat.value),winType:method.value,preset:shape.value});forcedMessage.textContent='已按真实引擎完成和牌；请查看结算动画和阶段演出。';}catch(error){forcedMessage.textContent=error.message;}
+    });force.append(forceWin,forcedMessage,make('p','qy-test-hint','仅供本地测试：替换获胜者手牌，用真实役种与计分结算。已结束的一局会开始同一局次的下一次测试，保留本场累计失分；不向联机服务器发送和牌指令。'));
     const music=make('section','qy-test-section qy-test-music');music.append(make('h3','','BGM 切换试听'),make('p','qy-test-hint','需要自行放入 table.mp3 和 riichi.mp3。试听不宣告立直，下一次牌局刷新会按真实立直状态接管。'));dialog.append(music);
     [false,true].forEach(riichi=>{const b=make('button','qy-filter',riichi?'立直 BGM':'普通 BGM');b.type='button';b.addEventListener('click',()=>document.dispatchEvent(new CustomEvent('queye:bgm-preview',{detail:{riichi}})));music.append(b);});
     document.body.append(dialog);let opener=null;dialog.addEventListener('close',()=>opener?.focus());
