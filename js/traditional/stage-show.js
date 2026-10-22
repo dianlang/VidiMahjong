@@ -2,12 +2,12 @@
 (() => {
   'use strict';
   const duration=QueYeMatchPause.DURATION_MS,registry=QueYeCharacters;
-  let queue=[],active=null,dialog=null,timer=null,startTimer=null,voice=null,sfx=null,utterance=null,opener=null,owner=null,pause=null;
+  let queue=[],active=null,dialog=null,timer=null,startTimer=null,voice=null,sfx=null,opener=null,owner=null,pause=null;
   let localDeadline=0,onlineRevision=null,roomKey=null;
   const idle=[];
   const make=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text)e.textContent=text;return e;};
   function whenIdle(){return active||queue.length?new Promise(resolve=>idle.push(resolve)):Promise.resolve();}
-  function stopAudio(){for(const audio of [voice,sfx])if(audio){audio.pause();audio.removeAttribute('src');}if(utterance&&window.speechSynthesis)window.speechSynthesis.cancel();utterance=null;voice=null;sfx=null;}
+  function stopAudio(){for(const audio of [voice,sfx])if(audio){audio.pause();audio.removeAttribute('src');}voice=null;sfx=null;}
   function play(item){
     try{if(localStorage.getItem('vidimahjong-character-voice')==='off')return;}catch(_){}
     sfx=new Audio(`assets/sfx/stage-${item.stage}.wav`);sfx.volume=.22;sfx.play().catch(()=>{});
@@ -17,10 +17,6 @@
       let failed=false;const fallback=()=>{
         if(failed)return;failed=true;if(active!==item)return;
         if(extension==='mp3'){start('ogg');return;}
-        if(window.speechSynthesis&&typeof SpeechSynthesisUtterance==='function'){
-          utterance=new SpeechSynthesisUtterance(registry.get(item.characterId).stageLines[item.stage]);utterance.lang='zh-CN';utterance.rate=1.05;
-          const voices=window.speechSynthesis.getVoices();const chinese=voices.filter(v=>/^zh/i.test(v.lang));utterance.voice=chinese.find(v=>v.localService)||chinese[0]||null;window.speechSynthesis.speak(utterance);
-        }
       };
       audio.addEventListener('error',fallback,{once:true});audio.play().catch(fallback);
     };start('mp3');
@@ -71,7 +67,7 @@
     owner=match;pause=QueYeMatchPause.attach(owner);
     const settlement=owner._queYeSettlement;
     const lead=!active&&!queue.length&&settlement&&owner.engine.phase==='ended'&&['ron','tsumo'].includes(settlement.type)?Math.max(0,settlement.startedAt+QueYeSettlement.SCORE_DURATION_MS-Date.now()):0;
-    localDeadline=Math.max(Date.now(),localDeadline)+duration+lead;pause.holdUntil(localDeadline);
+    localDeadline=Math.max(Date.now(),localDeadline)+duration+lead;pause.holdUntil(localDeadline+500);
     queue.push({...item});
     if(!active&&!startTimer){if(lead)startTimer=setTimeout(()=>{startTimer=null;next();},lead);else queueMicrotask(next);}
   }

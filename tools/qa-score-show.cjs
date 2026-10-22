@@ -10,11 +10,11 @@ const checks=`
  Array.from(d.querySelectorAll('.qy-tools button')).find(b=>b.textContent==='测试工具').click();
  d.querySelector('#qy-test-force-win .btn-primary').click();
  const score=d.querySelector('#qy-score-show');assert.equal(score.open,true);assert.equal(d.querySelector('#qy-stage-show')?.open||false,false);
- await new Promise(resolve=>setTimeout(resolve,1700));const show=d.querySelector('#qy-stage-show');assert.equal(score.open,false);assert.equal(show.open,true);assert.match(show.querySelector('h2').textContent,/狼姬/);assert.ok(spoken.length>0);assert.equal(spoken[0],show.querySelector('.qy-stage-line').textContent);
+ await new Promise(resolve=>setTimeout(resolve,1700));const show=d.querySelector('#qy-stage-show');assert.equal(score.open,false);assert.equal(show.open,true);assert.match(show.querySelector('h2').textContent,/狼姬/);assert.equal(spoken.length,0);assert.ok(show.querySelector('.qy-stage-line').textContent.length>0);
  const points=Array.from(d.querySelectorAll('.qy-score-count-row strong'),e=>Number(e.textContent.replaceAll(',','')));assert.equal(points.reduce((a,b)=>a+b,0),100000);assert.ok(points[0]<25000);assert.ok(points[1]>25000);
  click('#btn-start-match');w.qyFixture.stop();assert.equal(show.open,false);
  d.dispatchEvent(new w.CustomEvent('queye:table-state',{detail:{online:true,riichi:false}}));d.querySelector('#qy-test-force-win .btn-primary').click();assert.match(d.querySelector('#qy-forced-win-message').textContent,/联机房间不能/);
- assert.deepEqual(errors,[]);console.log('Score DOM PASS: test-tool button -> actual ron -> final point animation -> stage show -> matching Chinese TTS fallback; total points conserved, new-game cleanup and online test lock.');dom.window.close();
+ assert.deepEqual(errors,[]);console.log('Score DOM PASS: test-tool button -> actual ron -> final point animation -> stage show -> missing recording stays silent, captions retained; total points conserved, new-game cleanup and online test lock.');dom.window.close();
 })().catch(e=>{console.error(e);process.exit(1);});
 `;
 const source=prefix.replace('window.qyFixture={stop:()=>match.stop(),points:()=>match.engine.seats.map(s=>s.points)};',helpers)+checks;
