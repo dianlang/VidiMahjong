@@ -181,6 +181,8 @@ try {
     Copy-Item (Join-Path $Root "patch\server\random-character.js") (Join-Path $ProjectPath "server\random-character.js") -Force
     Add-Content -LiteralPath $roomPath -Value "require('./random-character.js').install(Room);" -Encoding UTF8
 
+    Copy-Item (Join-Path $Root "patch\server\package-lock.json") (Join-Path $ProjectPath "server\package-lock.json") -Force
+
     $Output = Join-Path $Root "VidiMahjong-zh-customized.zip"
     if (Test-Path $Output) { Remove-Item $Output -Force }
     Compress-Archive -Path (Join-Path $ProjectPath "*") -DestinationPath $Output -CompressionLevel Optimal
