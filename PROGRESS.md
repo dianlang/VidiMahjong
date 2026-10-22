@@ -229,3 +229,12 @@
 - 自动测试（Windows / Node.js v24.21.0）：`npm test` 45 项全部通过，含真实双客户端一手及点数守恒；`node --test tests/random-character.test.cjs` 的四种核心场景通过。`node tools/qa-random-character.cjs` 核对实际按钮、主立绘、排除在场角色、精确字幕、首段静音、后续连续段、新局重置及联机角色；`node tools/qa-dom.cjs`、`node tools/qa-stage-show.cjs`、`node tools/qa-voice-events.cjs`、`node tools/qa-voice-import.cjs`、`node tools/qa-score-show.cjs` 均通过。
 - 风险／未验收：上述为文件、逻辑和 DOM／Audio 桩验证；生成图已目视检查，但游戏实际合成画面、换装节奏、音频听感、真人多窗口整场与 Ubuntu 部署仍待实测。
 - 部署：服务器控制随机形态与机器人角色，重连恢复原形态。新增 randomPending 与首段变身表现字段，需前后端同版本并重启 Node 服务，旧房间会关闭。完整构建和覆盖前备份／哈希清单在 release/ 留档；E 盘配音原始输出与配置未改动。
+
+## 2026-10-22 收工同步与接续点
+
+- 今天功能停在 v7.3：六角色事件配音、逐阶段演出（旧图停留／台词→抖动→切图）、随机男性剪影首次失分变为未登场女性。后续从此继续，不重复导入已接入的录音或重做以上功能。
+- 全项目收工核对发现 G:\QueYe 另有 13 张用户更新立绘：狼姬 stage-2～4、莉莉 stage-0～4、缇娜 stage-0～4。以 G 盘现用图片为准，回填工作区 assets 与 patch，并同步 G 盘 patch；旧图、新图及校验清单在 release/QueYe-before-end-of-day-2026-10-22.zip 保存。没有修改 G 盘当前立绘。
+- 同步 server/package-lock.json 及其 canonical patch 副本；依赖仍为现有 package.json 的 ws，不升级软件。构建器复制锁文件，以保留依赖安装版本。
+- 今日功能验证已记录于 v7.3：Windows / Node.js v24.21.0，源码 `npm test` 45 项通过；G 盘 `node --test tests/random-character.test.cjs tests/voice-events.test.cjs tests/stage-presentation.test.cjs tests/riichi-rules.test.cjs tests/v6-modules.test.cjs tests/dev-hand-fixtures.test.cjs` 28 项通过。本次仅素材、锁文件与交接更新，不重复运行整场对局；构建和文件比对结果留档于 release/。
+- 下一次优先人工确认新立绘的实际合成画面、连续换装节奏和声音听感，再检查多窗口真人联机／重连。随机变身惊讶台词目前只有字幕，缺少对应录音时继续静音。联机新功能需要重启同版本服务器，今晚未替用户关闭现有房间。
+- 本次不新增功能；保留 E 盘配音生成工具与原始输出，开发运行入口及固定上游 SHA 不变。源码、G 盘游戏与 GitHub main 以收工校验清单核对。
