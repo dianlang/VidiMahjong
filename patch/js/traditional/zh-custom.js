@@ -405,7 +405,8 @@
         if (!voiceEnabled) { await sleep(450); continue; }
         const filename = kind === 'win' ? 'win' : `stage-${stage}`;
         const success = await playAudioPath(characterId, filename, 'mp3');
-        const fallbackSuccess = !success && voiceEnabled ? await playAudioPath(characterId, filename, 'ogg') : success;
+        const oggSuccess = !success && voiceEnabled ? await playAudioPath(characterId, filename, 'ogg') : success;
+        const fallbackSuccess = !oggSuccess && voiceEnabled ? await playAudioPath(characterId, filename, 'wav') : oggSuccess;
         if (!fallbackSuccess) await sleep(1250); // leave readable subtitle if files are absent
       }
     } finally { cueQueueActive = false; }

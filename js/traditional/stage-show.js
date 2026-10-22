@@ -17,6 +17,7 @@
       let failed=false;const fallback=()=>{
         if(failed)return;failed=true;if(active!==item)return;
         if(extension==='mp3'){start('ogg');return;}
+        if(extension==='ogg'){start('wav');return;}
       };
       audio.addEventListener('error',fallback,{once:true});audio.play().catch(fallback);
     };start('mp3');

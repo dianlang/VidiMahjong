@@ -203,3 +203,11 @@
 
 - 根据用户最新要求，完全移除系统语音合成；仅尝试角色 MP3／OGG，缺失时静音并保留台词。Windows / Node.js v24.21.0 下重新执行 `node tools/qa-stage-show.cjs`、`node tools/qa-score-show.cjs`、`node tools/qa-riichi-dora.cjs` 均通过；缺录音用例明确断言系统朗读调用次数为 0。
 - G:\QueYe 已先备份再同步 60 个文件并逐个核对 SHA-256。Windows / Node.js v24.21.0，在 G 盘执行 `node --test tests/v6-modules.test.cjs tests/riichi-rules.test.cjs tests/stage-presentation.test.cjs tests/dev-hand-fixtures.test.cjs`：18 项通过；同步清单和旧文件备份位于工作区 release/。
+
+## v7.1 配音导入（2026-10-22）
+
+- 范围：从用户 E 盘批量输出的清单导入六角色各 35 段日语 WAV（210 段），保留事件文件名，另建立 24 个阶段别名和 6 个大胜别名；同步 patch 与完整游戏素材。生成工具的模型配置和原始文件不改动。
+- 改动：阶段播放器和原语音队列支持 MP3 → OGG → WAV；阶段／大胜字幕对应清单中文释义；新增 voice-catalog.json 和可重复导入的 tools/import-voices.py；更新角色指南及缓存版本。
+- 当前接通四个失分阶段与已有单次赢分至少 8000 的反馈；第五阶段及其余吃碰立直等事件只保存素材，未新增触发器。规则、计分、联机消息不变，无服务器重启要求。
+- Windows / Python 3 / Node.js v24.21.0：`python tools/import-voices.py "E:\sbv2\雀夜_六角色批量配音工具\output"` 验证 210 个 WAV 头部与非空时长；`node tools/qa-voice-import.cjs` 验证 210 个哈希、匹配字幕和阶段／大胜 WAV 回退；`node tools/qa-score-show.cjs`、`node tools/qa-stage-show.cjs` 通过，缺配音系统朗读调用次数为 0。
+- 风险／人工测试：所有阶段录音不超过 3.425 秒，处于已有 6 秒演出内。以上是文件与 DOM 测试，尚未人工试听或验证实际设备解码；缺失音频仍不影响对局。构建和 G 盘同步哈希清单在 release/ 留档。
