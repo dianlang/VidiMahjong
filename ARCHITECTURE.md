@@ -208,3 +208,7 @@ Windows：先 `build.bat`，再解压产物、启动本地静态文件或联机�
 本机现在包含完整运行目录和叠加补丁，不再只是构建器。`table-ui.js` 在 `zh-custom.js`、`defeat-cg.js` 后加载，移动现有 DOM 节点以保留 ID 和事件绑定，并包装 `renderAll` / `renderOnlineTable` 读取已有公开视图。中央局况、四家排名和大立绘都来自本地已有状态或服务端已筛选视图，不发新的消息。
 
 大立绘通过现有 `.character-widget` 的 `data-character-id`、`data-character-stage` 读取资源。可点击的头像只改变查看对象；缩放偏好键为 `queye-portrait-size`，不影响角色分配、阶段或计分。角色选择改为单张初始图的 CSS 头像裁切。
+
+## v7.2 配音事件扩展
+
+新增末尾加载 voice-catalog.js → voice-events.js → voice-runtime.js。共享事件规划器仅消费已确认事件和公开结算；服务端 voice-events 扩展保存有界序列，在 buildStateFor 中过滤私有跳过反馈。前端按房间 session、sequence 及 hand 去重，共享单个角色音频通道，阶段演出抢占并阻止普通语音。stagePresentation.changes 逐个包含中间阶段，120 秒有界暂停适配器覆盖最长队列。详细契约及验证见 RELEASE_NOTES_v7.2.md。

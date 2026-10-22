@@ -211,3 +211,12 @@
 - 当前接通四个失分阶段与已有单次赢分至少 8000 的反馈；第五阶段及其余吃碰立直等事件只保存素材，未新增触发器。规则、计分、联机消息不变，无服务器重启要求。
 - Windows / Python 3 / Node.js v24.21.0：`python tools/import-voices.py "E:\sbv2\雀夜_六角色批量配音工具\output"` 验证 210 个 WAV 头部与非空时长；`node tools/qa-voice-import.cjs` 验证 210 个哈希、匹配字幕和阶段／大胜 WAV 回退；`node tools/qa-score-show.cjs`、`node tools/qa-stage-show.cjs` 通过，缺配音系统朗读调用次数为 0。
 - 风险／人工测试：所有阶段录音不超过 3.425 秒，处于已有 6 秒演出内。以上是文件与 DOM 测试，尚未人工试听或验证实际设备解码；缺失音频仍不影响对局。构建和 G 盘同步哈希清单在 release/ 留档。
+
+## v7.2 配音绑定与连续阶段（2026-10-22）
+
+- 范围：六角色 35 种配音事件全部定义实际触发；新增共享事件规划器、浏览器单通道播放器和服务器只读事件流。录音缺失仅字幕，不使用系统朗读。触发条件表、文件与边界见 RELEASE_NOTES_v7.2.md。
+- 阶段改动：跨阈值按 N→N+1 逐段排队；每段 6 秒，先旧立绘／台词，约 3.5 秒开始抖动，再淡入下一立绘。本地跳过仅当前段。服务器按全部段数暂停，适配器最长 120 秒；重连按剩余时间恢复，并跳过已结束段落。
+- 文件：patch/js/traditional/{voice-events,voice-runtime,stage-show,match-pause,zh-custom}.js、patch/server/{voice-events,stage-presentation}.js、patch/css/stage-show.css、生成的 voice-catalog.js 与运行副本，以及加载／构建／文档／回归文件。六个受保护上游文件、计分与役种判定不改动。
+- 自动测试（Windows / Node.js v24.21.0）：`npm test` 41 项全部通过，包含真实双 WebSocket 一手、点数一致与守恒。`node tools/qa-stage-show.cjs`、`node tools/qa-voice-events.cjs`、`node tools/qa-voice-import.cjs`、`node tools/qa-score-show.cjs`、`node tools/qa-dom.cjs`、`node tools/qa-riichi-dora.cjs` 均通过；包括连续队列、96 秒停顿、合法服务器行动、私有跳过过滤、重复状态静音、单通道、210 录音哈希及无系统合成语音。
+- 风险／人工：普通语音可能被阶段抢占，低优先级过期语音会丢弃，以避免积压。DOM／Audio 桩不是实机视觉或听感验收；真实手机／桌面音频、四真人整场与 Ubuntu 仍待检查。
+- 部署：新增只读 voiceEvents 状态，无新增客户端命令；前后端须同版本更新并重启 Node 服务（旧房间关闭）。完整构建、覆盖前备份和 G 盘逐文件哈希清单位于 release/，保留用户 E 盘原配音与模型配置。

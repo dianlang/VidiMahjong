@@ -19,15 +19,16 @@ with ZipFile(root / 'VidiMahjong-zh-customized.zip') as archive:
             if patch.is_file():
                 path = patch.relative_to(root / 'patch').as_posix()
                 assert patch.read_bytes() == archive.read(prefix + path), path
-    scripts = ['js/traditional/riichi-rules.js','js/traditional/settlement.js','assets/characters/roster.js','js/traditional/characters.js','js/traditional/zh-custom.js','js/traditional/match-pause.js','js/traditional/stage-show.js','js/traditional/defeat-cg.js','js/traditional/table-ui.js','js/traditional/yaku-catalog.js','js/traditional/table-extras.js','js/traditional/dora-highlight.js','js/traditional/riichi-ui.js','js/traditional/score-show.js','js/traditional/dev-hand-fixtures.js','js/traditional/dev-tools.js','js/traditional/ui-sfx.js','js/traditional/bgm.js']
+    scripts = ['js/traditional/riichi-rules.js','js/traditional/settlement.js','assets/characters/roster.js','js/traditional/characters.js','js/traditional/zh-custom.js','js/traditional/match-pause.js','js/traditional/stage-show.js','js/traditional/defeat-cg.js','js/traditional/table-ui.js','js/traditional/yaku-catalog.js','js/traditional/table-extras.js','js/traditional/dora-highlight.js','js/traditional/riichi-ui.js','js/traditional/score-show.js','js/traditional/dev-hand-fixtures.js','js/traditional/dev-tools.js','js/traditional/ui-sfx.js','js/traditional/bgm.js','assets/characters/voice-catalog.js','js/traditional/voice-events.js','js/traditional/voice-runtime.js']
     html = archive.read(entry).decode('utf-8-sig')
     assert [html.index(path) for path in scripts] == sorted(html.index(path) for path in scripts)
-    for document in ('AGENTS.md','PROGRESS.md','ARCHITECTURE.md','CHARACTER_GUIDE.md','RELEASE_NOTES_v6.md','RELEASE_NOTES_v7.md'):
+    for document in ('AGENTS.md','PROGRESS.md','ARCHITECTURE.md','CHARACTER_GUIDE.md','RELEASE_NOTES_v6.md','RELEASE_NOTES_v7.md','RELEASE_NOTES_v7.2.md'):
         assert archive.read(prefix+document) == (root/document).read_bytes(), document
     room = archive.read(prefix+'server/room.js').decode('utf-8-sig')
     assert "require('../js/traditional/characters.js').has(characterId)" in room
     assert "require('./stage-presentation.js').install(Room)" in room
     assert "require('./riichi-actions.js').install(Room)" in room
+    assert "require('./voice-events.js').install(Room)" in room
     assert archive.read(prefix+'server/package.json')
     assert archive.read(prefix+'js/traditional/online.js')
 print('Build ZIP PASS: fixed upstream six protected files unchanged; all patch files, script order, server extensions and handoff documents verified.')

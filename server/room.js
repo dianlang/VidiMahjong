@@ -226,3 +226,5 @@ require('./riichi-actions.js').install(Room);
 
 
 
+
+require('./voice-events.js').install(Room);

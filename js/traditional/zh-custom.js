@@ -462,6 +462,7 @@
   }
 
   function notifyBigWins(mode, characterAssignments) {
+    if (window.QueYeVoices) return; // The shared channel uses actual hand results.
     const tracker = lossTrackers[mode];
     if (tracker.lastWinRevision === tracker.revision) return;
     tracker.lastWinRevision = tracker.revision;
