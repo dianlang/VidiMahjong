@@ -1,0 +1,13 @@
+.qy-table .htile.qy-tile-locked { opacity:.48; filter:saturate(.35); cursor:not-allowed; }
+.qy-table .htile.qy-riichi-choice { outline:2px solid #efcb83; outline-offset:3px; translate:0 -5px; box-shadow:0 0 16px #eac47966,0 4px 0 #91a383; }
+.qy-table .htile.qy-tile-locked:hover { transform:none; }
+.qy-table .qy-riichi-button { border-color:#d7655d; color:#f4d0a1; background:#61322d; }
+.qy-riichi-discard { transform:rotate(90deg); margin:0 4px; outline:1px solid #df8b70; }
+.qy-riichi-confirm { width:min(420px,90vw); }
+.qy-riichi-confirm h2 { color:#e1c98f; font:26px "SimSun",serif; }
+.qy-riichi-confirm p { font-size:13px; line-height:1.9; color:#bdc9ad; }
+.qy-riichi-preview { display:flex; justify-content:center; padding:15px; }
+.qy-riichi-preview .mini-tile-chip { width:55px; height:74px; background:#f1eddb; border-radius:5px; }
+.qy-riichi-waits { display:flex; flex-wrap:wrap; gap:7px; }
+.qy-riichi-waits .mini-tile-chip { width:28px; height:39px; background:#f1eddb; border-radius:3px; }
+.qy-riichi-confirm-actions { display:flex; justify-content:flex-end; gap:12px; margin-top:20px; }
