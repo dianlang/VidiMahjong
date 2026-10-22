@@ -1,0 +1,38 @@
+{
+  "retrieved": "2026-10-22",
+  "index": "https://github.com/vg-mjg/MajsoulData/blob/48e6fb6ec32b2f3f10405845641f9316d02fd6e6/pipeline/mirror.js",
+  "files": [
+    {
+      "name": "btn_click",
+      "path": "MyAssets/ui/mj/main/audio/btn_click.mp3",
+      "mirrorURL": "https://files.riichi.moe/mjg/game%20resources%20and%20tools/Mahjong%20Soul/unity_raw/extracted/MyAssets/ui/mj/main/audio/btn_click.mp3",
+      "originalURL": "https://appstatic.mahjongsoul.com/v4/en/resources/ab/WebGL/ASTC/Assets/MyAssets/ui/mj/main/audio/btn_click.mp3",
+      "bytes": 2884,
+      "sha256": "30449499c0572c43eb766f2c5060bfd5497b0079262ab7e43956df8d2c123b86"
+    },
+    {
+      "name": "btn_cancel",
+      "path": "MyAssets/ui/mj/main/audio/btn_cancel.mp3",
+      "mirrorURL": "https://files.riichi.moe/mjg/game%20resources%20and%20tools/Mahjong%20Soul/unity_raw/extracted/MyAssets/ui/mj/main/audio/btn_cancel.mp3",
+      "originalURL": "https://appstatic.mahjongsoul.com/v4/en/resources/ab/WebGL/ASTC/Assets/MyAssets/ui/mj/main/audio/btn_cancel.mp3",
+      "bytes": 5687,
+      "sha256": "89ed806a9b63a158ac28200710b98da9aee1a6c7d57f307256de7d7601f91966"
+    },
+    {
+      "name": "click_pai",
+      "path": "MyAssets/ui/mj/main/audio/click_pai.mp3",
+      "mirrorURL": "https://files.riichi.moe/mjg/game%20resources%20and%20tools/Mahjong%20Soul/unity_raw/extracted/MyAssets/ui/mj/main/audio/click_pai.mp3",
+      "originalURL": "https://appstatic.mahjongsoul.com/v4/en/resources/ab/WebGL/ASTC/Assets/MyAssets/ui/mj/main/audio/click_pai.mp3",
+      "bytes": 9367,
+      "sha256": "ff7c24659bca772db6198e9b15644cfe92dc6de121678284f70a16a81a9b9c47"
+    },
+    {
+      "name": "discard_tile",
+      "path": "MyAssets/ui/mj/main/audio/discard_tile.mp3",
+      "mirrorURL": "https://files.riichi.moe/mjg/game%20resources%20and%20tools/Mahjong%20Soul/unity_raw/extracted/MyAssets/ui/mj/main/audio/discard_tile.mp3",
+      "originalURL": "https://appstatic.mahjongsoul.com/v4/en/resources/ab/WebGL/ASTC/Assets/MyAssets/ui/mj/main/audio/discard_tile.mp3",
+      "bytes": 3369,
+      "sha256": "fdc4b7a9ad8c078a2371fb89d2e784a10e16be3ce422d5dda98629a997b588c3"
+    }
+  ]
+}

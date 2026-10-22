@@ -6,7 +6,10 @@
   audio.preload = 'none';
   audio.volume = 0.25;
   let enabled = true;
-  let missing = false;
+  const unavailable = new Set();
+  const positions = {table:0,riichi:0};
+  let currentTrack = 'table';
+  let wantedTrack = 'table';
   try { enabled = localStorage.getItem('queye-bgm') !== 'off'; } catch (_) {}
   let button;
   const zh = () => typeof currentLang === 'undefined' || currentLang === 'zh';
@@ -18,10 +21,27 @@
     button.title = zh() ? '替换 assets/bgm/table.mp3 更换音乐' : 'Replace assets/bgm/table.mp3 to change music';
   }
   function play() {
-    if (!enabled || missing || document.hidden || !audio.paused) return;
+    if (!enabled || unavailable.has(currentTrack) || document.hidden || !audio.paused) return;
     audio.play().catch(() => {});
   }
-  audio.addEventListener('error', () => { missing = true; });
+  function selectTrack(requested) {
+    wantedTrack = requested;
+    const next = unavailable.has(requested) ? 'table' : requested;
+    if (next === currentTrack) { play(); return; }
+    positions[currentTrack] = Number.isFinite(audio.currentTime) ? audio.currentTime : 0;
+    audio.pause();
+    currentTrack = next;
+    audio.src = `assets/bgm/${next}.mp3`;
+    audio.load();
+    play();
+  }
+  audio.addEventListener('loadedmetadata', () => { try { audio.currentTime = positions[currentTrack]; } catch (_) {} });
+  audio.addEventListener('error', () => {
+    unavailable.add(currentTrack);
+    if (currentTrack === 'riichi') selectTrack('table');
+  });
+  document.addEventListener('queye:table-state', event => selectTrack(event.detail.riichi ? 'riichi' : 'table'));
+  document.addEventListener('queye:bgm-preview', event => selectTrack(event.detail.riichi ? 'riichi' : 'table'));
   document.addEventListener('pointerdown', play, { passive: true });
   document.addEventListener('keydown', play);
   document.addEventListener('visibilitychange', () => { if (document.hidden) audio.pause(); else play(); });
@@ -34,7 +54,9 @@
       enabled = !enabled;
       try { localStorage.setItem('queye-bgm', enabled ? 'on' : 'off'); } catch (_) {}
       if (enabled) {
-        if (missing) { missing = false; audio.load(); }
+        unavailable.clear();
+        selectTrack(wantedTrack);
+        audio.load();
         play();
       } else audio.pause();
       label();
