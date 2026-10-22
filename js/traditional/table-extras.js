@@ -7,7 +7,7 @@
   const art = Object.fromEntries(['m','p','s'].flatMap((s,i)=>Array.from({length:9},(_,n)=>[`${s}${n+1}`,`${['Man','Pin','Sou'][i]}${n+1}`])));
   Object.assign(art,{wE:'Ton',wS:'Nan',wW:'Shaa',wN:'Pei',dR:'Chun',dG:'Hatsu',dW:'Haku'});
   const originalFace=tileFaceHTML;
-  tileFaceHTML = function(id) { return art[id] ? `<img class="qy-tile-svg" src="assets/tiles/Regular/${art[id]}.svg" alt="" draggable="false">` : originalFace(id); };
+  tileFaceHTML = function(id) { return art[id] ? `<img class="qy-tile-svg" data-qy-tile="${id}" src="assets/tiles/Regular/${art[id]}.svg" alt="" draggable="false">` : originalFace(id); };
   function tileName(id){
     const t=TILE_TYPES_BY_ID[id];
     return t?.category==='suit' ? `${['','一','二','三','四','五','六','七','八','九'][t.rank]}${{characters:'万',circle:'筒',bamboo:'索'}[t.suit]}` : ({wE:'东风',wS:'南风',wW:'西风',wN:'北风',dR:'红中',dG:'发财',dW:'白板'}[id] || '牌');
@@ -57,7 +57,7 @@
     document.addEventListener('error',event=>{
       const image=event.target;if(!image?.matches?.('.qy-tile-svg'))return;
       const id=Object.keys(art).find(key=>image.getAttribute('src')?.endsWith(`/${art[key]}.svg`));
-      if(id){const span=make('span','qy-tile-fallback');span.innerHTML=originalFace(id);image.replaceWith(span);}
+      if(id){const span=make('span','qy-tile-fallback');span.dataset.qyTile=id;span.innerHTML=originalFace(id);image.replaceWith(span);}
     },true);
   }
   function chip(id,latest=false){const c=miniTileChip(id,false);c.title=tileName(id);c.setAttribute('aria-label',tileName(id));c.classList.toggle('is-latest-discard',latest);return c;}
