@@ -33,6 +33,6 @@
 
 本轮浏览器预览工具被访问策略拦截，没有完成桌面／手机视觉与真实音频听感检查。DOM 模拟不验证布局、声音解码或完整比赛。四真人整场、断线重连、Ubuntu 部署仍待实测。已保留 G 盘现有普通 BGM，尚未提供立直 BGM；03／04／05 独立结算图仍使用 stage-4 回退。
 
-素材来源和权利分别记录在 `assets/tiles/SOURCE.md`、`assets/tiles/LICENSE.md`、`assets/sfx/majsoul/SOURCES.json`。雀魂音效没有被声明为 CC0；按用户本轮要求仅用于私人测试备份。
+素材来源和权利分别记录在 `assets/tiles/SOURCE.md`、`assets/tiles/LICENSE.md`、`assets/sfx/majsoul/SOURCES.json`。雀魂音效没有被声明为 CC0；用于用户的测试项目，本次完整工程和现有素材的公开备份由用户明确确认。
 
-GitHub 目标：用户随后指定 `https://github.com/dianlang/VidiMahjong`，并明确允许先公开上传完整工程和现有素材，稍后自行改为私有。本机推送登录现已可用；保留原先分模块提交历史，上传完成后核对远程分支与文件哈希，再记录完成状态。
+GitHub 备份已上传至 `https://github.com/dianlang/VidiMahjong` 的 `main`。用户明确允许先公开上传完整工程和现有素材，稍后自行改为私有。Windows / Git 下执行 `git push --set-upstream origin main` 成功；首次完整备份提交 `f0f1d6f2227b55ae19edf22fbd888323cbecd271` 的全部 282 个文件已与本地 Git blob SHA 逐一核对一致，分模块修改历史保留。未上传依赖目录、临时缓存和 release/ 归档目录；游戏源码、构建器、补丁、立绘、现有普通 BGM 和界面音效均已备份。
