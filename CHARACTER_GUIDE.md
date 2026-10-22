@@ -18,4 +18,6 @@
 
 共享逻辑位于 `patch/js/traditional/characters.js`，负责校验、默认值和安全目录名。不要在该文件重复维护角色名单。
 
+v7 全屏演出直接读取 `stageLines`，配音仍用 `voice/stage-N.mp3` 或 OGG，缺少录音时不播放角色语音，仅保留字幕；不必在演出代码重复填写台词。
+
 测试：Windows / Node.js 下执行 `node --test tests/v6-modules.test.cjs`；界面仍需检查新图片的头像裁切、缺图回退和手机布局。

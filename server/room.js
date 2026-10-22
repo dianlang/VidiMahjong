@@ -215,6 +215,8 @@ class Room {
 }
 
 module.exports = { Room, ROOM_IDLE_TTL_MS };
+require('./stage-presentation.js').install(Room);
+require('./riichi-actions.js').install(Room);
 
 
 

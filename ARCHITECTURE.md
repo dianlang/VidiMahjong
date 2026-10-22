@@ -2,6 +2,8 @@
 
 > v6 补充（2026-10-22）：以下 v3 目录描述属于历史记录。当前同时保留完整运行工程和规范补丁源；最新功能与验收见 PROGRESS.md / RELEASE_NOTES_v6.md。
 
+> v7：最新说明见 RELEASE_NOTES_v7.md。前后端安装共用 riichi-rules / settlement 扩展；match-pause 适配实例暂停机器人和输入，server/stage-presentation 按权威失分安排带剩余时间的停顿，riichi-actions 校验宣言和摸切。score-show 先播放点数动画，再等待 stage-show 队列结束后打开原结算面板；缺配音时仅保留字幕，不调用系统朗读。dora-highlight 调用原引擎映射；dev-hand-fixtures 仅在本地测试按钮调用时注入手牌，由真实引擎完成结算。
+
 新增同步加载链为：原版 ui/online → assets/characters/roster.js → characters.js → zh-custom → defeat-cg → table-ui → yaku-catalog → table-extras → dev-tools → ui-sfx → bgm。角色表通过 UMD 同时提供给浏览器和 Node 服务器；服务器只验证 ID 是否在名单内，不信任客户端点数。table-extras 读取已有公开桌面视图后发送浏览器内部事件 queye:table-state，供音乐和本地测试工具判断状态；该事件不进入 WebSocket 协议。新增角色流程见 CHARACTER_GUIDE.md。
 
 > 2026-10-21 交接记录。实际检查对象：上传的 v3 构建包（28 个文件）；原版目录及源码入口：核对 GitHub 上游固定提交 `e4207acd04887355c012ee2ab9d9456c4cbcb874`。**没有在本环境完成联网构建，因此生成游戏目录属于构建规则确认，而非本地生成后的逐文件验收。**

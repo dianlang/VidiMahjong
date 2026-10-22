@@ -191,3 +191,15 @@
 ## 选人文案更新（2026-10-22）
 
 六角色和随机按钮改用用户确认的七句小字；角色句子存入 roster 的可选 tagline 字段，选人只以 textContent 渲染。运行目录、patch、构建注入与缓存版本同步，未改规则或联机行为。Windows / Node.js v24.21.0：`node --test tests/v6-modules.test.cjs` 六项通过；`node release/check-taglines.cjs`（临时 jsdom 检查）核对本地和联机两个选人卡片的七句文案，并通过现有 DOM 集成检查；不是视觉端到端验收。
+
+## v7 追加记录（2026-10-22）
+
+- 已实现和牌点数动画 → 跨失分阈值后全屏立绘、台词、可用录音（缺失时仅字幕）；本地暂停适配器、联机权威停顿、新局清理和重连剩余时间同步。
+- 已实现宝牌金边与“宝”标记、实际宝牌展示；合法立直舍牌高亮、听牌预览、确认支付、横置宣言牌与后续摸切锁定；本地指定座位真实和牌测试。
+- 用户明确授权立直规则修复，使用前后端共享扩展，原六个受保护文件未编辑。原支付公式保持，结束局公开分数及时使用已算出的最终点数，并避免重复结算。
+- Windows / Node.js v24.21.0：`npm test` 35 项全部通过，含真实双 WebSocket 客户端完成一手、双方结算一致与点数守恒。立直 5 项、阶段／结算 5 项、指定和牌 2 项（覆盖 24 种组合）及三份 qa-* DOM 集成检查通过。构建与同步以交付文件哈希清单记录。
+- 前端与 Node 服务需同版本并重启；新增协议字段见 RELEASE_NOTES_v7.md。桌面／手机视觉、实际语音听感、四真人整场及 Ubuntu 验收仍未完成。
+- 实际执行 `powershell -NoProfile -ExecutionPolicy Bypass -File ./build-from-upstream.ps1` 并生成完整 ZIP，`python tools/verify-build.py` 核对全补丁、服务器扩展、加载顺序、交接文档及六个受保护文件通过。G 盘更新采用覆盖前备份与逐文件 SHA-256 清单。
+
+- 根据用户最新要求，完全移除系统语音合成；仅尝试角色 MP3／OGG，缺失时静音并保留台词。Windows / Node.js v24.21.0 下重新执行 `node tools/qa-stage-show.cjs`、`node tools/qa-score-show.cjs`、`node tools/qa-riichi-dora.cjs` 均通过；缺录音用例明确断言系统朗读调用次数为 0。
+- G:\QueYe 已先备份再同步 60 个文件并逐个核对 SHA-256。Windows / Node.js v24.21.0，在 G 盘执行 `node --test tests/v6-modules.test.cjs tests/riichi-rules.test.cjs tests/stage-presentation.test.cjs tests/dev-hand-fixtures.test.cjs`：18 项通过；同步清单和旧文件备份位于工作区 release/。

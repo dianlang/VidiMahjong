@@ -51,10 +51,10 @@ try {
     Copy-Item (Join-Path $Root "patch\css\table-ui.css") (Join-Path $cssDir "table-ui.css") -Force
     Copy-Item (Join-Path $Root "patch\js\traditional\table-ui.js") (Join-Path $jsDir "table-ui.js") -Force
     Copy-Item (Join-Path $Root "patch\js\traditional\bgm.js") (Join-Path $jsDir "bgm.js") -Force
-    foreach ($module in @('characters', 'yaku-catalog', 'table-extras', 'dev-tools', 'ui-sfx')) {
+    foreach ($module in @('characters', 'yaku-catalog', 'table-extras', 'dev-tools', 'ui-sfx', 'match-pause', 'stage-show', 'dora-highlight', 'riichi-rules', 'riichi-ui', 'settlement', 'score-show', 'dev-hand-fixtures')) {
         Copy-Item (Join-Path $Root "patch\js\traditional\$module.js") (Join-Path $jsDir "$module.js") -Force
     }
-    foreach ($sheet in @('character-select', 'table-extras')) {
+    foreach ($sheet in @('character-select', 'table-extras', 'stage-show', 'dora-highlight', 'riichi-ui', 'score-show')) {
         Copy-Item (Join-Path $Root "patch\css\$sheet.css") (Join-Path $cssDir "$sheet.css") -Force
     }
     $tilesTarget = Join-Path $ProjectPath "assets\tiles"
@@ -100,15 +100,15 @@ try {
         $html = [regex]::Replace($html, '</body>', "  <script src=`"js/traditional/bgm.js?v=5.1`"></script>`r`n</body>", 1)
     }
     # All additions are synchronous native scripts. Registry precedes every consumer.
-    $html = $html.Replace('  <script src="js/traditional/zh-custom.js?v=5"></script>', '  <script src="assets/characters/roster.js?v=6.1"></script><script src="js/traditional/characters.js?v=6.1"></script><script src="js/traditional/zh-custom.js?v=6.1"></script>')
-    $html = $html.Replace('  <script src="js/traditional/bgm.js?v=5.1"></script>', '  <script src="js/traditional/yaku-catalog.js?v=6"></script><script src="js/traditional/table-extras.js?v=6"></script><script src="js/traditional/dev-tools.js?v=6"></script><script src="js/traditional/ui-sfx.js?v=6"></script><script src="js/traditional/bgm.js?v=6"></script>')
-    $html = $html.Replace('</head>', '<link rel="stylesheet" href="css/character-select.css?v=6"><link rel="stylesheet" href="css/table-extras.css?v=6"></head>')
+    $html = $html.Replace('  <script src="js/traditional/zh-custom.js?v=5"></script>', '  <script src="js/traditional/riichi-rules.js?v=7"></script><script src="js/traditional/settlement.js?v=7"></script><script src="assets/characters/roster.js?v=6.1"></script><script src="js/traditional/characters.js?v=6.1"></script><script src="js/traditional/zh-custom.js?v=7"></script><script src="js/traditional/match-pause.js?v=7"></script><script src="js/traditional/stage-show.js?v=7"></script>')
+    $html = $html.Replace('  <script src="js/traditional/bgm.js?v=5.1"></script>', '  <script src="js/traditional/yaku-catalog.js?v=6"></script><script src="js/traditional/table-extras.js?v=7"></script><script src="js/traditional/dora-highlight.js?v=7"></script><script src="js/traditional/riichi-ui.js?v=7"></script><script src="js/traditional/score-show.js?v=7"></script><script src="js/traditional/dev-hand-fixtures.js?v=7"></script><script src="js/traditional/dev-tools.js?v=7"></script><script src="js/traditional/ui-sfx.js?v=6"></script><script src="js/traditional/bgm.js?v=6"></script>')
+    $html = $html.Replace('</head>', '<link rel="stylesheet" href="css/score-show.css?v=7"><link rel="stylesheet" href="css/riichi-ui.css?v=7"><link rel="stylesheet" href="css/dora-highlight.css?v=7"><link rel="stylesheet" href="css/stage-show.css?v=7"><link rel="stylesheet" href="css/character-select.css?v=6"><link rel="stylesheet" href="css/table-extras.css?v=7"></head>')
     Set-Content -LiteralPath $htmlPath -Value $html -Encoding UTF8
 
     Copy-Item (Join-Path $Root "patch\README_CN.md") (Join-Path $ProjectPath "README_CN.md") -Force
     Copy-Item (Join-Path $Root "patch\start-local.bat") (Join-Path $ProjectPath "start-local.bat") -Force
     Copy-Item (Join-Path $Root "patch\start-online-server.bat") (Join-Path $ProjectPath "start-online-server.bat") -Force
-    foreach ($document in @('AGENTS.md', 'ARCHITECTURE.md', 'PROGRESS.md', 'CHARACTER_GUIDE.md', 'RELEASE_NOTES_v6.md')) {
+    foreach ($document in @('AGENTS.md', 'ARCHITECTURE.md', 'PROGRESS.md', 'CHARACTER_GUIDE.md', 'RELEASE_NOTES_v6.md', 'RELEASE_NOTES_v7.md')) {
         Copy-Item (Join-Path $Root $document) (Join-Path $ProjectPath $document) -Force
     }
 
@@ -169,6 +169,13 @@ try {
     Replace-RequiredText $roomPath "  onMatchEvent(event) {" ($scoreTracking.TrimEnd() + "`n  onMatchEvent(event) {") "cumulative-loss method"
     Replace-RequiredText $roomPath "      points: m.points,`r`n      riichiSticksOnTable:" "      points: m.points,`r`n      cumulativeLosses: this.cumulativeLosses.slice(),`r`n      scoreRevision: this.scoreRevision,`r`n      recentGains: this.recentGains.slice(),`r`n      riichiSticksOnTable:" "broadcast server loss and big-win state"
 
+
+    # Presentation pause is an extension; do not edit the protected engine files.
+    Copy-Item (Join-Path $Root "patch\server\stage-presentation.js") (Join-Path $ProjectPath "server\stage-presentation.js") -Force
+    Add-Content -LiteralPath $roomPath -Value "require('./stage-presentation.js').install(Room);" -Encoding UTF8
+    Copy-Item (Join-Path $Root "patch\server\riichi-actions.js") (Join-Path $ProjectPath "server\riichi-actions.js") -Force
+    Copy-Item (Join-Path $Root "patch\server\shared-engine.js") (Join-Path $ProjectPath "server\shared-engine.js") -Force
+    Add-Content -LiteralPath $roomPath -Value "require('./riichi-actions.js').install(Room);" -Encoding UTF8
 
     $Output = Join-Path $Root "VidiMahjong-zh-customized.zip"
     if (Test-Path $Output) { Remove-Item $Output -Force }

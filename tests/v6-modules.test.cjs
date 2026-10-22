@@ -7,7 +7,7 @@ test('one registry supports an additional character on browser and room server',
   const entries=[...roster,{id:'character-07',name:'新角色'}];
   const context={QueYeCharacterRoster:entries};vm.runInNewContext(read('js/traditional/characters.js'),context);
   const r=context.QueYeCharacters;assert.equal(r.ids.length,7);assert.equal(r.get('character-07').name,'新角色');assert.equal(r.stagePath('character-07',3),'assets/characters/character-07/stage-3.png');
-  const roomContext={module:{exports:{}},require:id=>{assert.equal(id,'../js/traditional/characters.js');return r;}};
+  const roomContext={module:{exports:{}},require:id=>{if(id==='./stage-presentation.js')return require('../server/stage-presentation.js');if(id==='./riichi-actions.js')return require('../server/riichi-actions.js');assert.equal(id,'../js/traditional/characters.js');return r;}};
   vm.runInNewContext(read('server/room.js'),roomContext);const room=new roomContext.module.exports.Room('TEST',{});
   room.addPlayer({},'p1','First','character-07');assert.equal(room.seats[0].characterId,'character-07');
   room.addPlayer({},'p2','Second','character-999');assert.equal(room.seats[1].characterId,null);
@@ -44,6 +44,7 @@ test('muting remains effective through riichi and re-enabling retries music',()=
 });
 test('all runtime module files and assets match canonical patch sources',()=>{
  for(const dir of ['js/traditional','css'])for(const name of fs.readdirSync('patch/'+dir))assert.equal(read(dir+'/'+name),read('patch/'+dir+'/'+name));
+ for(const name of fs.readdirSync('patch/server'))assert.equal(read('server/'+name),read('patch/server/'+name));
  const tiles=fs.readdirSync('assets/tiles/Regular').filter(p=>p.endsWith('.svg'));assert.equal(tiles.length,34);
  assert.match(read('assets/tiles/LICENSE.md'),/public domain/);
  for(const tile of tiles){const text=read('assets/tiles/Regular/'+tile);assert.match(text,/<svg/);assert.doesNotMatch(text,/<script|(?:href|src)=["'](?:https?:|data:)/i);}

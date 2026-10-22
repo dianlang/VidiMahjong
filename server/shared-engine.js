@@ -45,6 +45,15 @@ this.STANDARD_TYPE_IDS = STANDARD_TYPE_IDS;
 `;
 vm.runInContext(code + exposeTail, sandbox, { filename: 'shared-client-engine.js' });
 
+// Explicit user-requested riichi correction, shared with the browser overlay.
+require('../js/traditional/riichi-rules.js').install(sandbox.RiichiEngine, {
+  checkWin: sandbox.checkWin, types: sandbox.STANDARD_TYPE_IDS,
+});
+const upstreamBotRiichi = sandbox.chooseBotRiichi;
+sandbox.chooseBotRiichi = (game, seat) => upstreamBotRiichi(game, seat)
+  && game.riichiDiscardOptions(seat).includes(game.turnDrawnTile);
+require('../js/traditional/settlement.js').install(sandbox.LocalMatch);
+
 module.exports = {
   RiichiEngine: sandbox.RiichiEngine,
   LocalMatch: sandbox.LocalMatch,
