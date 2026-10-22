@@ -110,63 +110,18 @@
     logo.setAttribute('aria-label', '雀夜');
   });
 
-  const CHARACTER_IDS = Array.from({ length: 6 }, (_, i) => `character-${String(i + 1).padStart(2, '0')}`);
-  const CHARACTER_NAMES = {
-    'character-01': '狼姬',
-    'character-02': '秋源',
-    'character-03': '莉莉',
-    'character-04': '缇娜',
-    'character-05': '棉花糖',
-    'character-06': '拉比'
-  };
-  // Script for each voice cue. Stages are outfit/accessory changes with NO nudity.
-  // Audio is optional: assets/characters/character-XX/voice/stage-N.mp3 (or .ogg).
-  const STAGE_VOICE_LINES = {
-    'character-01': {
-      1: '咦？披风扣子怎么松了……',
-      2: '别盯着看啦，我自己会整理的！',
-      3: '尾巴都不知道往哪儿放了……真是的。',
-      4: '好、好啦！先让我整理一下衣服嘛……'
-    },
-    'character-02': {
-      1: '哎呀，披肩被风吹歪了。',
-      2: '翅膀别乱动！越整理越乱啦。',
-      3: '不许笑我……我平时可不是这样。',
-      4: '呜……今天真是把脸都丢光啦。'
-    },
-    'character-03': {
-      1: '呀，围裙的系带松开了。',
-      2: '失礼了，请容我稍微整理一下。',
-      3: '请、请不要一直注视我……',
-      4: '对不起……我现在真的有点慌张。'
-    },
-    'character-04': {
-      1: '哼，长袍的扣饰有些碍事。',
-      2: '区区这点意外，还不足以动摇我。',
-      3: '你、你刚才什么也没有看到吧？',
-      4: '不许再看了！这是命令……拜托。'
-    },
-    'character-05': {
-      1: '帽子歪了。问题不大。',
-      2: '披风滑下来了。……有点麻烦。',
-      3: '我没有在害羞。……大概。',
-      4: '脸很热。请暂时不要看这边。'
-    },
-    'character-06': {
-      1: '外套先搭在椅背上，继续吧。',
-      2: '领带有点乱……失礼了。',
-      3: '等一下，让我先整理好仪容。',
-      4: '都说别一直看着我了……真拿你没办法。'
-    }
-  };
-  function normalizeCharacterId(value) {
-    return CHARACTER_IDS.includes(value) ? value : CHARACTER_IDS[0];
-  }
+  const registry = globalThis.QueYeCharacters;
+  const CHARACTER_IDS = registry.ids;
+  const CHARACTER_NAMES = Object.fromEntries(registry.entries.map(c => [c.id, c.name]));
+  const STAGE_VOICE_LINES = Object.fromEntries(registry.entries.map(c => [c.id, c.stageLines]));
+  const normalizeCharacterId = value => registry.normalize(value);
   function readSelectedCharacterId() {
     try { return normalizeCharacterId(localStorage.getItem('vidimahjong-character-id')); }
     catch (_) { return CHARACTER_IDS[0]; }
   }
   let selectedCharacterId = readSelectedCharacterId();
+  let randomCharacter = false;
+  try { randomCharacter = localStorage.getItem('vidimahjong-character-random') === 'on'; } catch (_) {}
   let localHumanCharacterSeat = 0;
   let localCharacterAssignments = {};
   let voiceEnabled = (() => {
@@ -200,23 +155,50 @@
       card.querySelectorAll('.character-choice').forEach((button) => {
         const id = button.dataset.characterId;
         const name = button.querySelector('.character-choice-name');
-        if (name) name.textContent = CHARACTER_NAMES[id] || id;
-        button.classList.toggle('is-selected', id === selectedCharacterId);
-        button.setAttribute('aria-pressed', id === selectedCharacterId ? 'true' : 'false');
+        const chosen = id === (randomCharacter ? 'random' : selectedCharacterId);
+        if (name) name.textContent = id === 'random' ? (currentLang === 'zh' ? '随机' : 'Random') : CHARACTER_NAMES[id];
+        button.classList.toggle('is-selected', chosen);
+        button.setAttribute('aria-pressed', String(chosen));
         const badge = button.querySelector('.character-choice-selected');
-        if (badge) badge.textContent = id === selectedCharacterId ? (dict.characterSelected || 'Selected') : '';
+        if (badge) badge.textContent = chosen ? (dict.characterSelected || 'Selected') : '';
         button.querySelectorAll('.character-stage-slot-label').forEach((label, i) => {
           label.textContent = `${dict.characterSelectStage || 'Stage'} ${i}`;
         });
       });
+      previewCharacter(card, randomCharacter ? 'random' : selectedCharacterId);
     });
     updateVoiceSwitches();
   }
 
   function setSelectedCharacterId(id) {
-    selectedCharacterId = normalizeCharacterId(id);
-    try { localStorage.setItem('vidimahjong-character-id', selectedCharacterId); } catch (_) {}
+    randomCharacter = id === 'random';
+    if (!randomCharacter) selectedCharacterId = normalizeCharacterId(id);
+    try {
+      localStorage.setItem('vidimahjong-character-id', selectedCharacterId);
+      localStorage.setItem('vidimahjong-character-random', randomCharacter ? 'on' : 'off');
+    } catch (_) {}
     refreshCharacterPickers();
+  }
+  function resolveRandomCharacter() {
+    if (!randomCharacter) return;
+    selectedCharacterId = CHARACTER_IDS[Math.floor(Math.random() * CHARACTER_IDS.length)];
+    try { localStorage.setItem('vidimahjong-character-id', selectedCharacterId); } catch (_) {}
+  }
+  function previewCharacter(card, id) {
+    const preview = card.querySelector('.character-fighter-stage');
+    if (!preview) return;
+    const random = id === 'random';
+    preview.classList.toggle('is-random', random);
+    preview.querySelector('.fighter-name').textContent = random ? (currentLang === 'zh' ? '随机' : 'RANDOM') : CHARACTER_NAMES[id];
+    preview.querySelector('.fighter-number').textContent = random ? 'RANDOM SELECT' : `PLAYER SELECT / ${id.slice(-2)}`;
+    preview.querySelector('.fighter-tagline').textContent = random ? (currentLang === 'zh' ? '开局时，从已加入的角色中随机选择。' : 'A new pick when the match starts.') : (currentLang === 'zh' ? '今夜，与你同席。' : 'Take your seat tonight.');
+    const image = preview.querySelector('img');
+    image.hidden = random;
+    if (!random) {
+      const source = `assets/characters/${id}/stage-0.png`;
+      if (image.getAttribute('src') !== source) image.src = source;
+      image.alt = CHARACTER_NAMES[id];
+    }
   }
 
   function createCharacterPicker() {
@@ -226,19 +208,24 @@
     card.innerHTML = `
       <p class="setup-label character-select-title"></p>
       <p class="character-select-hint"></p>
+      <div class="character-fighter-stage">
+        <div class="fighter-copy"><small class="fighter-number"></small><h2 class="fighter-name"></h2><p class="fighter-tagline"></p></div>
+        <span class="fighter-random-mark" aria-hidden="true">?</span><img alt="">
+        <span class="fighter-ready" aria-hidden="true">CHOOSE YOUR CHARACTER</span>
+      </div>
       <div class="character-choice-grid"></div>`;
     const grid = card.querySelector('.character-choice-grid');
-    CHARACTER_IDS.forEach((id) => {
+    [...CHARACTER_IDS, 'random'].forEach((id) => {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'character-choice';
       button.dataset.characterId = id;
-      button.setAttribute('aria-label', CHARACTER_NAMES[id]);
+      button.setAttribute('aria-label', id === 'random' ? '随机选择角色' : CHARACTER_NAMES[id]);
       const head = document.createElement('div');
       head.className = 'character-choice-head';
       const name = document.createElement('span');
       name.className = 'character-choice-name';
-      name.textContent = CHARACTER_NAMES[id];
+      name.textContent = id === 'random' ? '随机' : CHARACTER_NAMES[id];
       const badge = document.createElement('span');
       badge.className = 'character-choice-selected';
       head.append(name, badge);
@@ -246,18 +233,36 @@
 
       const avatar = document.createElement('div');
       avatar.className = 'character-choice-avatar';
+      if (id !== 'random') {
+        const crop = registry.get(id).avatar;
+        avatar.style.setProperty('--avatar-scale', crop.scale);
+        avatar.style.setProperty('--avatar-origin', crop.origin);
+      }
       const img = document.createElement('img');
-      img.src = `assets/characters/${id}/stage-0.png`;
+      if (id !== 'random') img.src = `assets/characters/${id}/stage-0.png`;
+      else { img.hidden = true; button.classList.add('character-choice--random'); }
       img.alt = '';
       img.loading = 'lazy';
       img.addEventListener('load', () => avatar.classList.add('has-art'));
       img.addEventListener('error', () => { img.hidden = true; });
       const fallback = document.createElement('span');
-      fallback.textContent = CHARACTER_NAMES[id].slice(0, 1);
+      fallback.textContent = id === 'random' ? '?' : CHARACTER_NAMES[id].slice(0, 1);
       avatar.append(img, fallback);
       button.prepend(avatar);
       button.addEventListener('click', () => setSelectedCharacterId(id));
+      button.addEventListener('mouseenter', () => previewCharacter(card, id));
+      button.addEventListener('focus', () => previewCharacter(card, id));
       grid.appendChild(button);
+    });
+    card.addEventListener('mouseleave', () => previewCharacter(card, randomCharacter ? 'random' : selectedCharacterId));
+    grid.addEventListener('keydown', (event) => {
+      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+      const choices = Array.from(grid.querySelectorAll('button'));
+      const index = choices.indexOf(event.target);
+      if (index < 0) return;
+      event.preventDefault();
+      const step = event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 1;
+      choices[(index + step + choices.length) % choices.length].focus();
     });
     const voiceOptions = document.createElement('div');
     voiceOptions.className = 'character-voice-options';
@@ -295,14 +300,7 @@
   const stageThresholds = [0, 3000, 8000, 15000, 25000];
   const BIG_WIN_THRESHOLD = 8000;
   const stageKeys = ['characterInitial', 'characterStage1', 'characterStage2', 'characterStage3', 'characterStage4'];
-  const WIN_VOICE_LINES = {
-    'character-01': '哼哼！刚才只是让着你们而已！',
-    'character-02': '嘿嘿！这下轮到我反击啦！',
-    'character-03': '太好了……总算挽回了一些。',
-    'character-04': '看见了吗？这才是我的真正实力。',
-    'character-05': '反击成功。……有一点开心。',
-    'character-06': '不错，局势终于回到掌控中了。'
-  };
+  const WIN_VOICE_LINES = Object.fromEntries(registry.entries.map(c => [c.id, c.winLine]));
   const lossTrackers = {
     local: { key: null, last: null, losses: [0, 0, 0, 0], gains: [0, 0, 0, 0], revision: 0, lastWinRevision: 0 },
     online: { key: null, last: null, losses: [0, 0, 0, 0], gains: [0, 0, 0, 0], revision: null, lastWinRevision: null }
@@ -489,7 +487,7 @@
           <div class="character-stage-flash" aria-hidden="true"></div>
         </div>
         <div class="character-info">
-          <div class="character-name">${CHARACTER_NAMES[safeCharacterId] || safeCharacterId}</div>
+          <div class="character-name">${registry.escapeHTML(CHARACTER_NAMES[safeCharacterId] || safeCharacterId)}</div>
           <div class="character-stage">${I18N[currentLang]?.clothingStage || '服装阶段'} ${stage}/4 · ${stageText}</div>
           <div class="character-progress"><span style="width:${progress}%"></span></div>
           <div class="character-loss">${I18N[currentLang]?.lossProgress || '本场累计失分'}：${Math.floor(loss).toLocaleString()}</div>
@@ -594,6 +592,7 @@
   const localStartButton = document.getElementById('btn-start-match');
   if (localStartButton) {
     localStartButton.addEventListener('click', () => {
+      resolveRandomCharacter();
       const humanSeats = Array.from(document.querySelectorAll('#seat-picker .seat-toggle.is-human'))
         .map((button) => Number(button.dataset.seat)).filter((seat) => Number.isInteger(seat));
       localHumanCharacterSeat = humanSeats.length ? humanSeats[0] : 0;
@@ -604,6 +603,9 @@
       resetStagePresentation('local');
     }, true);
   }
+  ['btn-create-room', 'btn-join-room'].forEach((id) => {
+    document.getElementById(id)?.addEventListener('click', resolveRandomCharacter, true);
+  });
 
   if (typeof renderOpponents === 'function') {
     const originalRenderOpponents = renderOpponents;

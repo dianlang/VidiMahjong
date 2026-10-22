@@ -1,0 +1,66 @@
+.qy-tile-svg { display:block; width:100%; height:100%; object-fit:contain; border-radius:inherit; pointer-events:none; }
+.qy-tile-fallback { display:contents; }
+.qy-table .htile:has(.qy-tile-svg),.mini-tile-chip:has(.qy-tile-svg) { overflow:hidden; }
+.qy-table .opponent-discards,.qy-table .human-discards { background:#12332d66; padding:5px; border:1px solid #b2bf8c33; border-radius:4px; box-sizing:content-box; min-height:36px; }
+.qy-table .opponent-discards::before,.qy-table .human-discards::before { content:attr(data-river-label); position:absolute; bottom:calc(100% + 5px); left:0; width:100%; color:#b7c7a9; font-size:9px; font-family:"Microsoft YaHei",sans-serif; letter-spacing:1px; white-space:nowrap; }
+.qy-table .opponent-panel:nth-child(1) .opponent-discards { transform:translateY(-50%); right:calc(100% + 17px); }
+.qy-table .opponent-panel:nth-child(3) .opponent-discards { transform:translateY(-50%); left:calc(100% + 17px); }
+.mini-tile-chip.is-latest-discard { outline:2px solid #ebcc7c; outline-offset:1px; }
+.qy-reference-dialog { width:min(860px,94vw); max-width:94vw; max-height:90dvh; padding:25px; overflow:auto; border:1px solid #8b946866; border-radius:10px; background:#142c28; color:#d8dfcd; box-shadow:0 20px 80px #0009; }
+.qy-reference-dialog::backdrop { background:#031814bd; backdrop-filter:blur(5px); }
+.qy-reference-head { display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.qy-reference-head h2 { margin:0; font:26px "SimSun",serif; color:#dfcc99; letter-spacing:3px; }
+.qy-reference-close { background:none; border:0; color:#d4c296; font-size:30px; cursor:pointer; padding:0 8px; }
+.qy-reference-intro { font-size:12px; line-height:1.8; color:#9eb49c; margin:14px 0; }
+.qy-yaku-search { width:100%; background:#0c221e; color:#e2e4ce; border:1px solid #6b805b66; border-radius:5px; padding:11px 13px; font-size:13px; }
+.qy-yaku-filters { display:flex; flex-wrap:wrap; gap:6px; margin:13px 0; }
+.qy-filter { padding:7px 12px; border:1px solid #87946944; background:transparent; color:#aabca2; border-radius:4px; cursor:pointer; }
+.qy-filter[aria-pressed="true"] { color:#182d21; background:#d0bc83; border-color:#d0bc83; }
+.qy-yaku-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.qy-yaku-row { padding:13px; border:1px solid #94a67a28; background:#0a241c55; border-radius:5px; }
+.qy-yaku-title { display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+.qy-yaku-title h3 { font-size:15px; color:#d9cc9f; margin:0; }
+.qy-yaku-value { font-size:10px; color:#92ac8b; }
+.qy-yaku-row p { color:#b6c6ad; font-size:12px; line-height:1.8; margin:9px 0 0; }
+.qy-yaku-note { display:block; color:#b8a47c; font-size:10px; line-height:1.7; margin-top:7px; }
+.qy-yaku-scope { margin-top:18px; padding:12px; border:1px solid #9c997133; font-size:12px; line-height:1.8; color:#b6bc9f; }
+.qy-yaku-scope summary { cursor:pointer; color:#d6c296; }
+.qy-art-credit { color:#809a84; font-size:10px; margin-bottom:0; }
+.qy-art-credit a { color:#b2b78d; }
+.qy-river-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; }
+.qy-river-section { padding:17px; background:#0e241f; border:1px solid #96a47833; border-radius:6px; }
+.qy-river-section h3 { font-size:15px; color:#dcc995; margin:0 0 5px; }
+.qy-river-count { display:block; color:#89a287; font-size:10px; margin:0 0 13px; }
+.qy-river-pile { display:grid; grid-template-columns:repeat(6,36px); gap:3px; margin-bottom:12px; }
+.qy-river-pile .mini-tile-chip,.qy-river-melds .mini-tile-chip { width:36px!important; height:48px!important; aspect-ratio:auto; }
+.qy-river-melds { display:flex; flex-wrap:wrap; gap:8px; }
+.qy-meld-group { display:flex; gap:2px; }
+.qy-river-empty { grid-column:1 / -1; color:#6c8d74; font-size:12px; padding:16px 0; }
+.qy-test-columns { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+.qy-test-section { background:#0b231c66; border:1px solid #8e9e7133; padding:18px; border-radius:6px; }
+.qy-test-section h3 { font-size:16px; color:#d5c292; margin:0 0 16px; }
+.qy-test-field { display:grid; grid-template-columns:90px 1fr; gap:12px; align-items:center; margin:10px 0; font-size:12px; color:#aebfa5; }
+.qy-test-field input,.qy-test-field select { width:100%; min-width:0; padding:9px; background:#0b201a; border:1px solid #78906566; color:#e1e2c9; border-radius:4px; }
+.qy-score-output { display:block; padding:18px 0; color:#ead6a5; }
+.qy-score-output strong { display:block; font:bold 30px Georgia,serif; }
+.qy-score-output span { display:block; color:#9fb598; font-size:11px; margin-top:10px; line-height:1.8; }
+.qy-test-hint { font-size:11px; line-height:1.8; color:#90a48a; }
+.qy-test-message { display:block; min-height:30px; font-size:11px; line-height:1.9; color:#d4c593; padding:9px 0; }
+.qy-test-section .btn { font-size:12px; padding:11px; width:100%; margin-top:12px; }
+.qy-test-presets { display:flex; flex-wrap:wrap; gap:4px; margin:12px 0; }
+.qy-test-presets .qy-filter { font-size:10px; padding:6px; }
+.qy-test-music { margin-top:20px; }
+.qy-test-music .qy-filter { margin-right:7px; }
+@media(max-width:1150px) and (min-width:601px) { .qy-table .opponent-panel:nth-child(1) .opponent-discards { right:calc(100% + 5px); } .qy-table .opponent-panel:nth-child(3) .opponent-discards { left:calc(100% + 5px); } }
+@media(max-width:600px) {
+ .qy-header { height:auto; min-height:61px; flex-basis:auto; padding-block:8px; }
+ .qy-tools { flex-wrap:wrap; justify-content:flex-end; gap:0; max-width:calc(100vw - 150px); }
+ .qy-tool { font-size:9px; padding:6px; }
+ .qy-table .opponent-panel:nth-child(1) .opponent-discards { right:-2px; transform:none; }
+ .qy-table .opponent-panel:nth-child(3) .opponent-discards { left:-2px; transform:none; }
+ .qy-reference-dialog { padding:17px; }
+ .qy-yaku-list,.qy-river-grid,.qy-test-columns { grid-template-columns:1fr; }
+ .qy-reference-head h2 { font-size:22px; }
+ .qy-table .opponent-discards::before,.qy-table .human-discards::before { font-size:7px; letter-spacing:0; }
+ .qy-river-section { padding:13px; }
+}

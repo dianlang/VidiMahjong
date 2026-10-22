@@ -124,8 +124,6 @@
 .character-choice-selected { font-size:9px; min-height:12px; }
 .character-choice-avatar { position:relative; width:100%; aspect-ratio:1; overflow:hidden; border-radius:5px; background:radial-gradient(circle at 50% 30%,#768975,#2c443e); display:grid; place-items:center; }
 .character-choice-avatar img { width:100%; height:100%; object-fit:cover; object-position:50% 18%; transform:scale(2.65); transform-origin:50% 18%; }
-.character-choice[data-character-id="character-03"] .character-choice-avatar img { transform:scale(3.2); }
-.character-choice[data-character-id="character-06"] .character-choice-avatar img { object-position:50% 0%; transform-origin:50% 0%; }
 .character-choice-avatar>span { font:28px "SimSun",serif; color:#d6c799; }
 .character-choice-avatar.has-art>span { display:none; }
 .character-choice-avatar img[hidden] { display:none; }

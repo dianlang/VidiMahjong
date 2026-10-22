@@ -6,16 +6,9 @@
 (() => {
   'use strict';
   const SEAT_COUNT = 4;
-  const CHARACTER_IDS = new Set(Array.from({length: 6}, (_, i) =>
-    `character-${String(i + 1).padStart(2, '0')}`));
-  const CHARACTER_NAMES = Object.freeze({
-    'character-01': '狼姬',
-    'character-02': '秋源',
-    'character-03': '莉莉',
-    'character-04': '缇娜',
-    'character-05': '棉花糖',
-    'character-06': '拉比'
-  });
+  const registry = globalThis.QueYeCharacters;
+  const CHARACTER_IDS = new Set(registry.ids);
+  const CHARACTER_NAMES = Object.fromEntries(registry.entries.map(c => [c.id, c.name]));
   const seatWinds = ['东', '南', '西', '北'];
 
   // Ranking rule: lower final score loses. For tied last places, choose
@@ -37,7 +30,7 @@
     const transmitted = onlineState && onlineState.seats && onlineState.seats[seat]
       ? onlineState.seats[seat].characterId : null;
     return CHARACTER_IDS.has(transmitted) ? transmitted :
-      `character-${String(seat + 1).padStart(2, '0')}`;
+      registry.ids[seat % registry.ids.length];
   }
 
   function uiText(chinese, english) {

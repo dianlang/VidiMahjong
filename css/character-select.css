@@ -1,0 +1,65 @@
+/* Character roster: portraits, preview, and a final random slot. */
+#setup-screen { background:radial-gradient(ellipse at 80% 35%,#33483a33,transparent 65%),#0e1b1d; }
+#setup-screen .menu-content { width:min(1100px,94vw); display:grid; grid-template-columns:260px minmax(0,1fr); column-gap:44px; align-items:start; text-align:left; }
+#setup-screen .menu-content>.eyebrow { grid-column:1; grid-row:1; color:#b3bc96; margin:14px 0; }
+#setup-screen .menu-content>.brand-logo { grid-column:1; grid-row:2; font-family:"SimSun",serif; letter-spacing:8px; font-size:64px; }
+#setup-screen .menu-content>.menu-subtitle { grid-column:1; grid-row:3; font-size:12px; line-height:1.9; color:#8fa394; }
+#setup-screen .menu-content>.setup-card:not(.character-select-card) { grid-column:1; grid-row:4; width:100%; margin-top:30px; padding:18px; border-color:#75856444; background:#162925; }
+#setup-screen .menu-buttons { grid-column:1; grid-row:5; width:100%; margin-top:24px; }
+#setup-screen .menu-buttons .btn-primary { background:#d1ba83; color:#182922; box-shadow:0 5px 0 #7c704d,0 12px 22px #0003; border-radius:4px; }
+#setup-screen .character-select-card { grid-column:2; grid-row:1 / 7; width:100%; margin:0; }
+.character-select-card { border:1px solid #9eaa7c44; padding:20px; background:linear-gradient(130deg,#1c302a,#102321); border-radius:8px; box-shadow:0 20px 60px #0004; }
+.character-select-title { text-align:left; font-size:18px; font-family:"SimSun",serif; color:#e2d2a8; letter-spacing:3px; margin:0; }
+.character-select-hint { margin:5px 0 14px; font-size:10px; color:#92a68f; }
+.character-fighter-stage { position:relative; height:310px; overflow:hidden; isolation:isolate; border:1px solid #b7bd8730; background:radial-gradient(ellipse at 80% 50%,#65745566,transparent 65%),repeating-linear-gradient(120deg,transparent 0 38px,#afbd8d07 38px 39px),#1b332c; margin-bottom:18px; }
+.character-fighter-stage::before { content:""; position:absolute; width:240px; height:240px; border:1px solid #d9d19d44; border-radius:50%; right:5%; top:10%; box-shadow:0 0 0 22px #b9c28b08,0 0 0 23px #b9c28b16; z-index:-1; }
+.character-fighter-stage img { position:absolute; right:0; bottom:-10px; height:105%; width:58%; object-fit:contain; object-position:center bottom; filter:drop-shadow(-10px 10px 20px #0005); }
+.character-fighter-stage img[hidden] { display:none; }
+.fighter-copy { position:absolute; left:25px; top:50%; transform:translateY(-50%); z-index:2; max-width:48%; }
+.fighter-number { font:9px Arial,sans-serif; letter-spacing:2px; color:#bcb88f; }
+.fighter-name { margin:15px 0 12px; font:bold clamp(32px,4vw,54px)/1.2 "SimSun",serif; letter-spacing:4px; color:#eee2c3; text-shadow:0 4px 15px #001f18; }
+.fighter-tagline { font-size:11px; color:#acbda3; line-height:1.9; }
+.fighter-ready { position:absolute; left:24px; bottom:18px; font:8px Arial,sans-serif; letter-spacing:3px; color:#8ba082; }
+.fighter-random-mark { display:none; position:absolute; right:15%; top:15%; font:220px/.9 Georgia,serif; color:#c9c28d; opacity:.65; }
+.character-fighter-stage.is-random .fighter-random-mark { display:block; }
+.character-choice-grid { grid-template-columns:repeat(7,minmax(0,1fr)); gap:7px; }
+.character-choice { position:relative; border-radius:3px; padding:4px; background:#122720; border-color:#69765a55; transition:transform .15s,border-color .15s; }
+.character-choice:hover,.character-choice:focus-visible { transform:translateY(-4px); border-color:#e1c98f; outline:0; }
+.character-choice.is-selected { background:#b5a36b22; border-color:#ead29a; box-shadow:0 0 0 1px #e7d49e,0 0 16px #d6cc9922; }
+.character-choice.is-selected::after { content:"1P"; position:absolute; top:-8px; left:0; background:#d1ba83; color:#173026; padding:1px 4px; font:bold 8px Arial,sans-serif; }
+.character-choice-head { margin-top:6px; gap:0; }
+.character-choice-name { font-size:11px; }
+.character-choice-selected { display:none; }
+.character-choice-avatar { border-radius:1px; }
+.character-choice--random .character-choice-avatar>span { font:45px Georgia,serif; }
+.character-voice-hint { font-size:9px; line-height:1.6; }
+.character-voice-options { margin-top:17px; }
+#online-connect-card { width:min(850px,92vw); }
+#online-connect-card .character-select-card { width:100%; margin:15px 0; }
+#online-connect-card .character-fighter-stage { height:240px; }
+#online-connect-card .character-choice-grid { grid-template-columns:repeat(7,minmax(0,1fr)); }
+@media(max-width:760px) {
+ #setup-screen .menu-content { display:flex; flex-direction:column; align-items:center; margin:24px 0; gap:0; }
+ #setup-screen .menu-content>.eyebrow { margin:6px; font-size:10px; }
+ #setup-screen .menu-content>.brand-logo { font-size:40px; }
+ #setup-screen .menu-content>.menu-subtitle { font-size:10px; text-align:center; }
+ #setup-screen .menu-content>.setup-card:not(.character-select-card) { margin:16px 0; padding:10px; width:100%; }
+ #setup-screen .seat-picker { grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px; }
+ #setup-screen .seat-toggle { padding:8px 3px; font-size:10px; }
+ #setup-screen .setup-label { margin-bottom:7px; }
+ .character-select-card { padding:12px; }
+ .character-select-title { font-size:15px; }
+ .character-fighter-stage,#online-connect-card .character-fighter-stage { height:230px; }
+ .fighter-copy { left:15px; }
+ .fighter-name { font-size:32px; }
+ .fighter-number { font-size:7px; letter-spacing:1px; }
+ .fighter-ready { left:15px; font-size:6px; letter-spacing:1px; }
+ .character-choice-grid,#online-connect-card .character-choice-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }
+ .character-choice-avatar { max-width:none; }
+ .character-choice-name { font-size:10px; }
+ .character-fighter-stage::before { width:165px; height:165px; right:1%; }
+ .fighter-random-mark { font-size:160px; }
+ #setup-screen .menu-buttons { margin-top:17px; }
+}
+
+.character-choice[data-character-id] .character-choice-avatar img { transform:scale(var(--avatar-scale,2.65)); transform-origin:var(--avatar-origin,50% 18%); object-position:var(--avatar-origin,50% 18%); }
