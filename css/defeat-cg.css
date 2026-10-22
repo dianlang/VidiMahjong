@@ -1,0 +1,21 @@
+/* QueYe v4 end-of-match defeat CG. Only adjusts the final-result modal. */
+#modal-match-end { width: min(710px, 94vw); box-sizing: border-box; max-height: min(92dvh, 900px); overflow-y: auto; }
+#modal-match-end .modal-body { min-width: 0; }
+.qye-defeat-cg { margin: 1rem auto 1.2rem; animation: qye-defeat-reveal .4s ease-out both; }
+.qye-defeat-heading { font-size: clamp(.9rem, 2vw, 1.12rem); font-weight: 700; letter-spacing: .12em; color: #f1d59a; margin-bottom: .75rem; }
+.qye-defeat-figure { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: min(43dvh, 400px); background: radial-gradient(ellipse at 50% 35%, #3f4d4e, #161c27 70%, #0a101b); border: 1px solid rgba(227,199,131,.45); border-radius: 10px; overflow: hidden; box-shadow: 0 12px 26px rgba(0,0,0,.34); }
+.qye-defeat-image { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+.qye-defeat-image[hidden], .qye-defeat-placeholder[hidden] { display: none; }
+.qye-defeat-placeholder { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: .5rem; text-align: center; color: #e4d9c6; }
+.qye-defeat-mark { font-family: serif; font-size: clamp(3rem, 9vw, 5.5rem); color: #e5c17a; opacity: .78; text-shadow: 0 4px 24px rgba(0,0,0,.32); }
+.qye-defeat-missing { font-size: .78rem; color: #c2b8aa; }
+.qye-defeat-description { margin: .75rem 0 .25rem; overflow-wrap: anywhere; color: #e6dfd0; font-size: .87rem; line-height: 1.5; }
+@keyframes qye-defeat-reveal { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (max-width: 600px) {
+  #modal-match-end { width: min(94vw, 710px); padding: 1.1rem .85rem; max-height: 94dvh; }
+  .qye-defeat-cg { margin: .7rem auto 1rem; }
+  .qye-defeat-heading { margin-bottom: .5rem; }
+  .qye-defeat-figure { max-height: 39dvh; }
+  .qye-defeat-description { font-size: .75rem; }
+}
+@media (prefers-reduced-motion: reduce) { .qye-defeat-cg { animation: none; } }

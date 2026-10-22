@@ -1,0 +1,155 @@
+﻿$ErrorActionPreference = 'Stop'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+$Root = Split-Path -Parent $MyInvocation.MyCommand.Path
+$Work = Join-Path $env:TEMP ("vidimahjong-zh-" + [guid]::NewGuid().ToString("N"))
+$Download = Join-Path $Work "upstream.zip"
+$Extract = Join-Path $Work "extract"
+New-Item -ItemType Directory -Force -Path $Work, $Extract | Out-Null
+
+try {
+    $urls = @(
+        "https://github.com/VidiPT89/VidiMahjong/archive/e4207acd04887355c012ee2ab9d9456c4cbcb874.zip",
+        "https://codeload.github.com/VidiPT89/VidiMahjong/zip/e4207acd04887355c012ee2ab9d9456c4cbcb874"
+    )
+    $downloaded = $false
+    foreach ($url in $urls) {
+        try {
+            Write-Host "Downloading upstream source: $url" -ForegroundColor Cyan
+            Invoke-WebRequest -Uri $url -OutFile $Download -UseBasicParsing -Headers @{ "User-Agent" = "VidiMahjong-ZH-Builder" }
+            if ((Get-Item $Download).Length -gt 10000) { $downloaded = $true; break }
+        } catch {
+            Write-Warning "Download attempt failed: $($_.Exception.Message)"
+        }
+    }
+    if (-not $downloaded) {
+        throw "Unable to download the upstream GitHub ZIP. Check GitHub connectivity and try again."
+    }
+
+    Expand-Archive -LiteralPath $Download -DestinationPath $Extract -Force
+    $Project = Get-ChildItem -LiteralPath $Extract -Directory | Where-Object { Test-Path (Join-Path $_.FullName "traditional.html") } | Select-Object -First 1
+    if (-not $Project) { throw "The downloaded archive did not contain traditional.html." }
+    $ProjectPath = $Project.FullName
+
+    $cssDir = Join-Path $ProjectPath "css"
+    $jsDir = Join-Path $ProjectPath "js\traditional"
+    New-Item -ItemType Directory -Force -Path $cssDir, $jsDir | Out-Null
+    Copy-Item (Join-Path $Root "patch\css\zh-custom.css") (Join-Path $cssDir "zh-custom.css") -Force
+    Copy-Item (Join-Path $Root "patch\js\traditional\zh-custom.js") (Join-Path $jsDir "zh-custom.js") -Force
+    Copy-Item (Join-Path $Root "patch\css\defeat-cg.css") (Join-Path $cssDir "defeat-cg.css") -Force
+    Copy-Item (Join-Path $Root "patch\js\traditional\defeat-cg.js") (Join-Path $jsDir "defeat-cg.js") -Force
+    Copy-Item (Join-Path $Root "patch\css\table-ui.css") (Join-Path $cssDir "table-ui.css") -Force
+    Copy-Item (Join-Path $Root "patch\js\traditional\table-ui.js") (Join-Path $jsDir "table-ui.js") -Force
+    Copy-Item (Join-Path $Root "patch\js\traditional\bgm.js") (Join-Path $jsDir "bgm.js") -Force
+    $bgmTarget = Join-Path $ProjectPath "assets\bgm"
+    New-Item -ItemType Directory -Force -Path $bgmTarget | Out-Null
+    Copy-Item (Join-Path $Root "patch\assets\bgm\*") $bgmTarget -Recurse -Force
+
+    $assetSource = Join-Path $Root "patch\assets\characters"
+    $assetTarget = Join-Path $ProjectPath "assets\characters"
+    New-Item -ItemType Directory -Force -Path $assetTarget | Out-Null
+    Copy-Item (Join-Path $assetSource "*") $assetTarget -Recurse -Force
+
+    $sfxSource = Join-Path $Root "patch\assets\sfx"
+    $sfxTarget = Join-Path $ProjectPath "assets\sfx"
+    New-Item -ItemType Directory -Force -Path $sfxTarget | Out-Null
+    Copy-Item (Join-Path $sfxSource "*") $sfxTarget -Recurse -Force
+
+    $htmlPath = Join-Path $ProjectPath "traditional.html"
+    $html = Get-Content -LiteralPath $htmlPath -Raw -Encoding UTF8
+    $html = [regex]::Replace($html, '<html lang="[^"]*">', '<html lang="zh-CN">', 1)
+    $html = [regex]::Replace($html, '<title>.*?</title>', '<title>雀夜 · 四人立直麻将</title>', 1)
+    if ($html -notmatch 'css/zh-custom\.css') {
+        $html = [regex]::Replace($html, '</head>', "  <link rel=`"stylesheet`" href=`"css/zh-custom.css?v=3`">`r`n</head>", 1)
+    }
+    if ($html -notmatch 'js/traditional/zh-custom\.js') {
+        $html = [regex]::Replace($html, '</body>', "  <script src=`"js/traditional/zh-custom.js?v=5`"></script>`r`n</body>", 1)
+    }
+    if ($html -notmatch 'css/defeat-cg\.css') {
+        $html = [regex]::Replace($html, '</head>', "  <link rel=`"stylesheet`" href=`"css/defeat-cg.css?v=4`">`r`n</head>", 1)
+    }
+    if ($html -notmatch 'js/traditional/defeat-cg\.js') {
+        $html = [regex]::Replace($html, '</body>', "  <script src=`"js/traditional/defeat-cg.js?v=5`"></script>`r`n</body>", 1)
+    }
+    if ($html -notmatch 'css/table-ui\.css') {
+        $html = [regex]::Replace($html, '</head>', "  <link rel=`"stylesheet`" href=`"css/table-ui.css?v=5.1`">`r`n</head>", 1)
+    }
+    if ($html -notmatch 'js/traditional/table-ui\.js') {
+        $html = [regex]::Replace($html, '</body>', "  <script src=`"js/traditional/table-ui.js?v=5.1`"></script>`r`n</body>", 1)
+    }
+    if ($html -notmatch 'js/traditional/bgm\.js') {
+        $html = [regex]::Replace($html, '</body>', "  <script src=`"js/traditional/bgm.js?v=5.1`"></script>`r`n</body>", 1)
+    }
+    Set-Content -LiteralPath $htmlPath -Value $html -Encoding UTF8
+
+    Copy-Item (Join-Path $Root "patch\README_CN.md") (Join-Path $ProjectPath "README_CN.md") -Force
+    Copy-Item (Join-Path $Root "patch\start-local.bat") (Join-Path $ProjectPath "start-local.bat") -Force
+    Copy-Item (Join-Path $Root "patch\start-online-server.bat") (Join-Path $ProjectPath "start-online-server.bat") -Force
+
+    function Replace-RequiredText([string]$FilePath, [string]$OldText, [string]$NewText, [string]$Label) {
+        $source = Get-Content -LiteralPath $FilePath -Raw -Encoding UTF8
+        # GitHub archives usually use LF; normalize source and patch snippets before matching.
+        $source = $source.Replace("`r`n", "`n")
+        $OldText = $OldText.Replace("`r`n", "`n")
+        $NewText = $NewText.Replace("`r`n", "`n")
+        if (-not $source.Contains($OldText)) {
+            if ($source.Contains($NewText)) { return }
+            throw "Could not find expected upstream code for patch: $Label ($FilePath)"
+        }
+        $source = $source.Replace($OldText, $NewText)
+        Set-Content -LiteralPath $FilePath -Value $source -Encoding UTF8
+    }
+
+    # Send the selected character ID through the existing WebSocket handshake.
+    $onlinePath = Join-Path $ProjectPath "js\traditional\online.js"
+    Replace-RequiredText $onlinePath "onlineSend({ type: 'create', playerId: onlinePlayerId });" "onlineSend({ type: 'create', playerId: onlinePlayerId, characterId: (localStorage.getItem('vidimahjong-character-id') || 'character-01') });" "online create character ID"
+    Replace-RequiredText $onlinePath "onlineSend({ type: 'join', code, playerId: onlinePlayerId });" "onlineSend({ type: 'join', code, playerId: onlinePlayerId, characterId: (localStorage.getItem('vidimahjong-character-id') || 'character-01') });" "online join character ID"
+
+    # Preserve and broadcast selected character IDs so every online client sees the same choices.
+    $serverIndexPath = Join-Path $ProjectPath "server\index.js"
+    Replace-RequiredText $serverIndexPath "room.addPlayer(ws, msg.playerId, msg.name)" "room.addPlayer(ws, msg.playerId, msg.name, msg.characterId)" "server handshake character ID"
+    Replace-RequiredText $serverIndexPath "target.addPlayer(ws, msg.playerId, msg.name)" "target.addPlayer(ws, msg.playerId, msg.name, msg.characterId)" "join handshake character ID"
+
+    $roomPath = Join-Path $ProjectPath "server\room.js"
+    Replace-RequiredText $roomPath "addPlayer(ws, playerId, name) {`r`n    this.lastActivityAt = Date.now();" "addPlayer(ws, playerId, name, characterId) {`r`n    this.lastActivityAt = Date.now();`r`n    const normalizedCharacterId = /^character-0[1-6]$/.test(characterId || '') ? characterId : null;" "room character ID parameter"
+    Replace-RequiredText $roomPath "      this.seats[existing].ws = ws;`r`n      return { seatIndex: existing, reconnected: true };" "      this.seats[existing].ws = ws;`r`n      if (normalizedCharacterId) this.seats[existing].characterId = normalizedCharacterId;`r`n      return { seatIndex: existing, reconnected: true };" "reconnect character ID"
+    Replace-RequiredText $roomPath '    this.seats[idx] = { ws, playerId, name: name || `Player ${idx + 1}` };' '    this.seats[idx] = { ws, playerId, name: name || `Player ${idx + 1}`, characterId: normalizedCharacterId };' 'store character ID in seat'
+    Replace-RequiredText $roomPath "seats: this.seats.map((s) => (s ? { name: s.name, connected: !!s.ws } : null))," "seats: this.seats.map((s) => (s ? { name: s.name, connected: !!s.ws, characterId: s.characterId || null } : null))," "lobby character ID"
+    Replace-RequiredText $roomPath "        name: this.seats[i] ? this.seats[i].name : null," "        name: this.seats[i] ? this.seats[i].name : null,`r`n        characterId: this.seats[i] ? this.seats[i].characterId || null : null," "state character ID"
+
+    # Authoritative server-side cumulative loss and big-win deltas, shared by all clients.
+    # The upstream match is a single match per room; fresh rooms start at zero.
+    Replace-RequiredText $roomPath "    this.lastActivityAt = Date.now();`r`n  }`r`n`r`n  hasAnyConnection()" "    this.lastActivityAt = Date.now();`r`n    this.cumulativeLosses = [0, 0, 0, 0];`r`n    this.lastScoreSnapshot = null;`r`n    this.scoreRevision = 0;`r`n    this.recentGains = [0, 0, 0, 0];`r`n  }`r`n`r`n  hasAnyConnection()" "initial cumulative-loss state"
+    $scoreTracking = @'
+  trackCumulativeLosses() {
+    if (!this.match || !this.match.engine) return;
+    const scores = this.match.engine.seats.map((seat) => seat.points);
+    if (!this.lastScoreSnapshot) {
+      this.lastScoreSnapshot = scores;
+      return;
+    }
+    let changed = false;
+    this.recentGains = scores.map((score, i) => {
+      const delta = Number(score) - Number(this.lastScoreSnapshot[i]);
+      if (delta !== 0) changed = true;
+      if (delta < 0) this.cumulativeLosses[i] += -delta;
+      return Math.max(delta, 0);
+    });
+    if (changed) this.scoreRevision++;
+    this.lastScoreSnapshot = scores;
+  }
+'@
+    Replace-RequiredText $roomPath "  onMatchEvent(event) {`r`n    this.lastActivityAt = Date.now();`r`n    this.broadcastState();" ("  onMatchEvent(event) {`n    this.lastActivityAt = Date.now();`n    this.trackCumulativeLosses();`n    this.broadcastState();") "server tracking hook"
+    Replace-RequiredText $roomPath "  onMatchEvent(event) {" ($scoreTracking.TrimEnd() + "`n  onMatchEvent(event) {") "cumulative-loss method"
+    Replace-RequiredText $roomPath "      points: m.points,`r`n      riichiSticksOnTable:" "      points: m.points,`r`n      cumulativeLosses: this.cumulativeLosses.slice(),`r`n      scoreRevision: this.scoreRevision,`r`n      recentGains: this.recentGains.slice(),`r`n      riichiSticksOnTable:" "broadcast server loss and big-win state"
+
+
+    $Output = Join-Path $Root "VidiMahjong-zh-customized.zip"
+    if (Test-Path $Output) { Remove-Item $Output -Force }
+    Compress-Archive -Path (Join-Path $ProjectPath "*") -DestinationPath $Output -CompressionLevel Optimal
+    Write-Host ""
+    Write-Host "Build complete: $Output" -ForegroundColor Green
+    Write-Host "Unzip it, then read README_CN.md. The original game engine is retained."
+} finally {
+    if (Test-Path $Work) { Remove-Item $Work -Recurse -Force -ErrorAction SilentlyContinue }
+}
