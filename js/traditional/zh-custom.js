@@ -191,7 +191,7 @@
     preview.classList.toggle('is-random', random);
     preview.querySelector('.fighter-name').textContent = random ? (currentLang === 'zh' ? '随机' : 'RANDOM') : CHARACTER_NAMES[id];
     preview.querySelector('.fighter-number').textContent = random ? 'RANDOM SELECT' : `PLAYER SELECT / ${id.slice(-2)}`;
-    preview.querySelector('.fighter-tagline').textContent = random ? (currentLang === 'zh' ? '开局时，从已加入的角色中随机选择。' : 'A new pick when the match starts.') : (currentLang === 'zh' ? '今夜，与你同席。' : 'Take your seat tonight.');
+    preview.querySelector('.fighter-tagline').textContent = random ? (currentLang === 'zh' ? '这一席，交给缘分。' : 'A new pick when the match starts.') : (currentLang === 'zh' ? registry.get(id).tagline : 'Take your seat tonight.');
     const image = preview.querySelector('img');
     image.hidden = random;
     if (!random) {

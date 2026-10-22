@@ -15,7 +15,7 @@
       const scale=Number(avatar.scale);
       const origin=/^\d{1,3}% \d{1,3}%$/.test(avatar.origin||'')?avatar.origin:'50% 8%';
       const stageLines=Object.freeze(Object.fromEntries([1,2,3,4].map(n=>[n,typeof c.stageLines?.[n]==='string'?c.stageLines[n]:'这局还没结束，继续吧。'])));
-      return Object.freeze({id:c.id,name:c.name.trim(),avatar:Object.freeze({scale:Number.isFinite(scale)&&scale>=1&&scale<=5?scale:2.4,origin}),stageLines,winLine:typeof c.winLine==='string'?c.winLine:'这次发挥不错。'});
+      return Object.freeze({id:c.id,name:c.name.trim(),tagline:typeof c.tagline==='string'&&c.tagline.trim()?c.tagline.trim():'今夜，与你同席。',avatar:Object.freeze({scale:Number.isFinite(scale)&&scale>=1&&scale<=5?scale:2.4,origin}),stageLines,winLine:typeof c.winLine==='string'?c.winLine:'这次发挥不错。'});
     });
     const ids=Object.freeze(normalized.map(c=>c.id));
     const has=id=>seen.has(id);

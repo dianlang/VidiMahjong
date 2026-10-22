@@ -187,3 +187,7 @@
 - [x] GitHub 备份：用户明确同意先公开上传至 `https://github.com/dianlang/VidiMahjong`，稍后自行改为私有。`git push --set-upstream origin main` 成功，原有分模块提交历史完整保留。首次完整备份提交 `f0f1d6f2227b55ae19edf22fbd888323cbecd271` 的 282 个文件（含 66 个 PNG 路径，以及音乐、音效）已通过 GitHub 连接器逐一比对 Git blob SHA，无缺失或差异。未上传 node_modules、临时缓存和 release/ 目录，依赖仍按 package.json 安装。
 
 服务器变动仅为按统一角色表验证 ID，未改变房间消息格式、规则、AI、计分或累计失分语义。前后端一起部署，角色配置变更后重启 Node 服务。现有 BGM 文件和用户新增素材在同步时应保留。
+
+## 选人文案更新（2026-10-22）
+
+六角色和随机按钮改用用户确认的七句小字；角色句子存入 roster 的可选 tagline 字段，选人只以 textContent 渲染。运行目录、patch、构建注入与缓存版本同步，未改规则或联机行为。Windows / Node.js v24.21.0：`node --test tests/v6-modules.test.cjs` 六项通过；`node release/check-taglines.cjs`（临时 jsdom 检查）核对本地和联机两个选人卡片的七句文案，并通过现有 DOM 集成检查；不是视觉端到端验收。

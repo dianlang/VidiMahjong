@@ -7,6 +7,7 @@
   {
     "id": "character-01",
     "name": "狼姬",
+    "tagline": "看什么？这局我可不会让你。",
     "avatar": {
       "scale": 2.65,
       "origin": "50% 18%"
@@ -22,6 +23,7 @@
   {
     "id": "character-02",
     "name": "秋源",
+    "tagline": "抓到好牌，也算一种小魔法吧？",
     "avatar": {
       "scale": 2.65,
       "origin": "50% 18%"
@@ -37,6 +39,7 @@
   {
     "id": "character-03",
     "name": "莉莉",
+    "tagline": "茶已经备好，请慢慢考虑。",
     "avatar": {
       "scale": 3.2,
       "origin": "50% 18%"
@@ -52,6 +55,7 @@
   {
     "id": "character-04",
     "name": "缇娜",
+    "tagline": "长夜漫漫，陪我再打一局。",
     "avatar": {
       "scale": 2.65,
       "origin": "50% 18%"
@@ -67,6 +71,7 @@
   {
     "id": "character-05",
     "name": "棉花糖",
+    "tagline": "运气无法计算。……有点麻烦。",
     "avatar": {
       "scale": 2.65,
       "origin": "50% 18%"
@@ -82,6 +87,7 @@
   {
     "id": "character-06",
     "name": "拉比",
+    "tagline": "今天不加班，只加番。",
     "avatar": {
       "scale": 2.6,
       "origin": "50% 0%"

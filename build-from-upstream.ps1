@@ -100,7 +100,7 @@ try {
         $html = [regex]::Replace($html, '</body>', "  <script src=`"js/traditional/bgm.js?v=5.1`"></script>`r`n</body>", 1)
     }
     # All additions are synchronous native scripts. Registry precedes every consumer.
-    $html = $html.Replace('  <script src="js/traditional/zh-custom.js?v=5"></script>', '  <script src="assets/characters/roster.js?v=6"></script><script src="js/traditional/characters.js?v=6"></script><script src="js/traditional/zh-custom.js?v=6"></script>')
+    $html = $html.Replace('  <script src="js/traditional/zh-custom.js?v=5"></script>', '  <script src="assets/characters/roster.js?v=6.1"></script><script src="js/traditional/characters.js?v=6.1"></script><script src="js/traditional/zh-custom.js?v=6.1"></script>')
     $html = $html.Replace('  <script src="js/traditional/bgm.js?v=5.1"></script>', '  <script src="js/traditional/yaku-catalog.js?v=6"></script><script src="js/traditional/table-extras.js?v=6"></script><script src="js/traditional/dev-tools.js?v=6"></script><script src="js/traditional/ui-sfx.js?v=6"></script><script src="js/traditional/bgm.js?v=6"></script>')
     $html = $html.Replace('</head>', '<link rel="stylesheet" href="css/character-select.css?v=6"><link rel="stylesheet" href="css/table-extras.css?v=6"></head>')
     Set-Content -LiteralPath $htmlPath -Value $html -Encoding UTF8
