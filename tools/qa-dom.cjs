@@ -16,7 +16,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict');
  const d=w.document,click=s=>{const node=d.querySelector(s);assert.ok(node,s);node.click();return node;};
  click('#btn-mode-local');assert.equal(d.querySelectorAll('#setup-screen .character-choice').length,7);
  click('#setup-screen [data-character-id="random"]');assert.equal(w.localStorage.getItem('vidimahjong-character-random'),'on');
- click('#btn-start-match');w.qyFixture.stop();assert.match(w.localStorage.getItem('vidimahjong-character-id'),/^character-0[1-6]$/);
+ click('#btn-start-match');w.qyFixture.stop();assert.equal(w.localStorage.getItem('vidimahjong-character-id'),'character-random');
  assert.equal(d.querySelectorAll('.qy-scores .qy-score-row').length,4);
  const face=d.querySelector('.htile .qy-tile-svg');assert.ok(face,'SVG faces used by the actual hand renderer');
  const openByText=text=>{const b=Array.from(d.querySelectorAll('.qy-tools button')).find(x=>x.textContent===text);assert.ok(b,text);b.click();};

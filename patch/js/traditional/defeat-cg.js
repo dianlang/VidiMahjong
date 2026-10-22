@@ -7,8 +7,9 @@
   'use strict';
   const SEAT_COUNT = 4;
   const registry = globalThis.QueYeCharacters;
-  const CHARACTER_IDS = new Set(registry.ids);
+  const CHARACTER_IDS = new Set([...registry.ids,registry.RANDOM_ID]);
   const CHARACTER_NAMES = Object.fromEntries(registry.entries.map(c => [c.id, c.name]));
+  CHARACTER_NAMES[registry.RANDOM_ID]=registry.get(registry.RANDOM_ID).name;
   const seatWinds = ['东', '南', '西', '北'];
 
   // Ranking rule: lower final score loses. For tied last places, choose

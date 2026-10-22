@@ -12,6 +12,7 @@
     try{if(localStorage.getItem('vidimahjong-character-voice')==='off')return;}catch(_){}
     sfx=new Audio(`assets/sfx/stage-${item.stage}.wav`);sfx.volume=.22;sfx.play().catch(()=>{});
     if(window.QueYeVoices){window.QueYeVoices.stage(item);return;}
+    if(item.silent)return;
     const start=extension=>{
       if(active!==item)return;
       const audio=new Audio(`assets/characters/${item.characterId}/voice/stage-${item.stage}.${extension}`);voice=audio;
@@ -53,12 +54,12 @@
     ensureDialog();opener=opener||document.activeElement;
     dialog.classList.remove('is-running','is-missing-art');
     const name=registry.get(item.characterId).name;
-    dialog.querySelector('h2').textContent=`${name} · 阶段 ${item.stage}`;
-    dialog.querySelector('.qy-stage-name').textContent=name;
-    dialog.querySelector('.qy-stage-line').textContent=registry.get(item.characterId).stageLines[item.stage];
+    dialog.querySelector('h2').textContent=item.transformationLine?`身份揭晓 · ${name}`:`${name} · 阶段 ${item.stage}`;
+    dialog.querySelector('.qy-stage-name').textContent=item.transformationLine?registry.get(item.fromCharacterId).name:name;
+    dialog.querySelector('.qy-stage-line').textContent=item.transformationLine||registry.get(item.characterId).stageLines[item.stage];
     dialog.querySelector('.qy-stage-skip').hidden=item.mode==='online';
     const before=dialog.querySelector('.qy-stage-before'),after=dialog.querySelector('.qy-stage-after');
-    before.hidden=false;after.hidden=false;before.src=registry.stagePath(item.characterId,item.previousStage);after.src=registry.stagePath(item.characterId,item.stage);after.alt=`${name}阶段 ${item.stage} 立绘`;
+    before.hidden=false;after.hidden=false;before.src=registry.stagePath(item.fromCharacterId||item.characterId,item.previousStage);after.src=registry.stagePath(item.characterId,item.stage);after.alt=`${name}阶段 ${item.stage} 立绘`;
     const length=Math.max(1,Math.min(duration,item.endsAt?item.endsAt-Date.now():duration));
     item.elapsedMs=duration-length;item.voiceLimit=length;
     dialog.style.setProperty('--show-duration',`${length}ms`);
@@ -78,7 +79,7 @@
     const count=item.stage-item.previousStage;
     if(count<1)return;
     localDeadline=Math.max(Date.now(),localDeadline)+duration*count+lead;pause.holdUntil(localDeadline+500);
-    for(let stage=item.previousStage+1;stage<=item.stage;stage++)queue.push({...item,previousStage:stage-1,stage});
+    for(let stage=item.previousStage+1;stage<=item.stage;stage++)queue.push({...item,...(stage===item.previousStage+1?{}:{fromCharacterId:null,transformationLine:null,silent:false}),previousStage:stage-1,stage});
     if(!active&&!startTimer){if(lead)startTimer=setTimeout(()=>{startTimer=null;next();},lead);else queueMicrotask(next);}
   }
   function cancel(mode){

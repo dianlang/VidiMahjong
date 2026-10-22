@@ -113,6 +113,7 @@
   const registry = globalThis.QueYeCharacters;
   const CHARACTER_IDS = registry.ids;
   const CHARACTER_NAMES = Object.fromEntries(registry.entries.map(c => [c.id, c.name]));
+  CHARACTER_NAMES[registry.RANDOM_ID]=registry.get(registry.RANDOM_ID).name;
   const STAGE_VOICE_LINES = Object.fromEntries(registry.entries.map(c => [c.id, c.stageLines]));
   const normalizeCharacterId = value => registry.normalize(value);
   function readSelectedCharacterId() {
@@ -124,6 +125,8 @@
   try { randomCharacter = localStorage.getItem('vidimahjong-character-random') === 'on'; } catch (_) {}
   let localHumanCharacterSeat = 0;
   let localCharacterAssignments = {};
+  let localRandomCharacters = null;
+  let localTransformations = {};
   let voiceEnabled = (() => {
     try { return localStorage.getItem('vidimahjong-character-voice') !== 'off'; }
     catch (_) { return true; }
@@ -181,7 +184,7 @@
   }
   function resolveRandomCharacter() {
     if (!randomCharacter) return;
-    selectedCharacterId = CHARACTER_IDS[Math.floor(Math.random() * CHARACTER_IDS.length)];
+    selectedCharacterId = registry.RANDOM_ID;
     try { localStorage.setItem('vidimahjong-character-id', selectedCharacterId); } catch (_) {}
   }
   function previewCharacter(card, id) {
@@ -477,7 +480,7 @@
     const safeCharacterId = normalizeCharacterId(characterId);
     const stage = stageForLoss(loss);
     const stageText = I18N[currentLang]?.[stageKeys[stage]] || I18N.en?.[stageKeys[stage]] || `阶段 ${stage}`;
-    const artPath = `assets/characters/${safeCharacterId}/stage-${initialStage}.png`;
+    const artPath = registry.stagePath(safeCharacterId,initialStage);
     const progress = Math.min(100, Math.round(stage / 4 * 100));
     return `
       <div class="character-widget" data-character-seat="${seatIndex}" data-character-id="${safeCharacterId}" data-character-stage="${stage}">
@@ -503,7 +506,7 @@
     const portrait = widget.querySelector('.character-portrait');
     const base = widget.querySelector('.character-art--base');
     const incoming = widget.querySelector('.character-art--incoming');
-    const nextSrc = `assets/characters/${characterId}/stage-${nextStage}.png`;
+    const nextSrc = registry.stagePath(characterId,nextStage);
     let completed = false;
     function finish() {
       if (completed || !widget.isConnected) return;
@@ -540,6 +543,7 @@
     const seen = displayedStages[mode];
     const previousStage = seen.get(seatIndex);
     const advancing = previousStage !== undefined && stage > previousStage && stage > 0;
+    const transformation=mode==='local'&&previousStage===0?localTransformations[seatIndex]:null;
     // The upstream opponent renderer rebuilds its panels on every state update.
     // Recreate with the PREVIOUS art when advancing, then cross-fade into new art.
     const initialStage = advancing ? previousStage : stage;
@@ -550,6 +554,7 @@
     const widget = wrapper.firstElementChild;
     if (self) widget.classList.add('character-widget--self');
     const image = widget.querySelector('.character-art--base');
+    if(advancing&&transformation)image.src=registry.stagePath(transformation.fromCharacterId,0);
     image.addEventListener('load', () => widget.classList.add('has-art'));
     image.addEventListener('error', () => { image.hidden = true; });
     container.insertAdjacentElement('afterbegin', widget);
@@ -559,7 +564,7 @@
     if (advancing) {
       animatePortrait(widget, safeCharacterId, stage);
       if (window.QueYeStageShow) {
-        if (mode === 'local') window.QueYeStageShow.enqueue({mode,seat:seatIndex,characterId:safeCharacterId,previousStage,stage});
+        if (mode === 'local') window.QueYeStageShow.enqueue({mode,seat:seatIndex,characterId:safeCharacterId,previousStage,stage,...(transformation||{})});
       } else queueCharacterCue(mode, safeCharacterId, stage);
     }
   }
@@ -579,6 +584,10 @@
     if (typeof match === 'undefined' || !match || !match.engine) return;
     const game = match.engine;
     const losses = updateLossTracker('local', match, game.seats.map((s) => s.points));
+    if(localRandomCharacters)for(let seat=0;seat<4;seat++){
+      const changed=localRandomCharacters.reveal(seat,losses[seat]);
+      if(changed){localCharacterAssignments[seat]=changed.characterId;localTransformations[seat]=changed;}
+    }
     const panels = document.querySelectorAll('#opponents-row .opponent-panel');
     panels.forEach((panel, offset) => {
       const seatIndex = (viewSeat + offset + 1) % 4;
@@ -603,6 +612,8 @@
         .map((button) => Number(button.dataset.seat)).filter((seat) => Number.isInteger(seat));
       localHumanCharacterSeat = humanSeats.length ? humanSeats[0] : 0;
       localCharacterAssignments = buildLocalCharacterAssignments(localHumanCharacterSeat);
+      localRandomCharacters=QueYeRandomCharacter.create([0,1,2,3].map(seat=>localCharacterAssignments[seat]));
+      localTransformations={};
       lossTrackers.local.key = null;
       lossTrackers.local.last = null;
       lossTrackers.local.losses = [0, 0, 0, 0];
@@ -639,7 +650,7 @@
     const result = {};
     const used = new Set();
     st.seats.forEach((seat, index) => {
-      const id = seat && CHARACTER_IDS.includes(seat.characterId) ? seat.characterId : null;
+      const id = seat && registry.has(seat.characterId) ? seat.characterId : null;
       if (id) { result[index] = id; used.add(id); }
     });
     if (mySeat >= 0 && mySeat < 4 && !result[mySeat]) {

@@ -110,7 +110,7 @@
   };
   // Stage audio owns the same channel; queued results wait until all stages finish.
   window.QueYeVoices=Object.freeze({
-    stage(item){stageActive=true;stop();if((item.elapsedMs||0)<500)void play(item.characterId,`stage_${item.stage}`,{stage:true,limit:Math.max(1,item.voiceLimit||6000)});},
+    stage(item){stageActive=true;stop();if(!item.silent&&(item.elapsedMs||0)<500)void play(item.characterId,`stage_${item.stage}`,{stage:true,limit:Math.max(1,item.voiceLimit||6000)});},
     endStage,reset,
   });
   document.getElementById('btn-start-match')?.addEventListener('click',()=>reset(),true);
