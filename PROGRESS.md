@@ -184,6 +184,6 @@
 - [x] Windows / Node.js v24.21.0 下 `npm test` 23 项通过，含真实双客户端一手对局；`node tools/qa-dom.cjs` 集成检查通过；详见 `RELEASE_NOTES_v6.md`。
 - [x] 129 个变更文件先备份再同步 G:\QueYe，逐一校验 SHA-256；G 盘运行 `node --test tests/v6-modules.test.cjs tests/defeat-cg.test.cjs` 10 项通过。构建 ZIP 已验证补丁与六个受保护文件，旧版备份和同步清单位于当前工作区 release/。
 - [ ] 桌面／手机视觉、真实音频听感、多人整场与 Ubuntu 验收未完成。本轮浏览器工具访问被策略拦截，DOM 模拟不能代替这些项目。G 盘已有 table.mp3，已保留并回填构建素材；riichi.mp3 仍待用户放入。
-- [ ] GitHub 私有备份等待可写仓库：用户已选择新建私有 QueYe；连接器无法创建仓库，本机无推送凭据，已请求仓库链接。
+- [ ] GitHub 备份：用户随后提供 `https://github.com/dianlang/VidiMahjong`，并明确同意先公开上传完整工程和现有素材、稍后自行改为私有。目标仓库为空；本机推送登录现已可用，准备连同模块提交历史上传，完成后以远程分支和文件哈希核验。
 
 服务器变动仅为按统一角色表验证 ID，未改变房间消息格式、规则、AI、计分或累计失分语义。前后端一起部署，角色配置变更后重启 Node 服务。现有 BGM 文件和用户新增素材在同步时应保留。

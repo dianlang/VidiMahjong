@@ -35,4 +35,4 @@
 
 素材来源和权利分别记录在 `assets/tiles/SOURCE.md`、`assets/tiles/LICENSE.md`、`assets/sfx/majsoul/SOURCES.json`。雀魂音效没有被声明为 CC0；按用户本轮要求仅用于私人测试备份。
 
-GitHub 目标：用户选择新建私有 `QueYe`。连接器没有创建仓库能力，本机未登录可推送凭据；已请求用户创建私有仓库并提供链接。取得可写仓库前，不将本地备份记为 GitHub 上传成功。
+GitHub 目标：用户随后指定 `https://github.com/dianlang/VidiMahjong`，并明确允许先公开上传完整工程和现有素材，稍后自行改为私有。本机推送登录现已可用；保留原先分模块提交历史，上传完成后核对远程分支与文件哈希，再记录完成状态。
