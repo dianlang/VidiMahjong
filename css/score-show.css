@@ -1,0 +1,12 @@
+.qy-score-show { width:min(600px,92vw); padding:30px; border:1px solid #b7a46d88; border-radius:12px; background:radial-gradient(ellipse at top,#324c35,#12291f 75%); color:#e4d9b7; box-shadow:0 25px 100px #0009; }
+.qy-score-show::backdrop { background:#02150fd9; backdrop-filter:blur(6px); }
+.qy-score-eyebrow { color:#a3af85; font:9px Arial,sans-serif; letter-spacing:3px; }
+.qy-score-show h2 { font:30px "SimSun",serif; color:#e6cc91; margin:15px 0 25px; }
+.qy-score-count-row { display:grid; grid-template-columns:1fr 1fr 85px; align-items:center; gap:12px; padding:18px 0; border-top:1px solid #b6bb7a22; }
+.qy-score-count-row span { font:14px "Microsoft YaHei",sans-serif; }
+.qy-score-count-row strong { text-align:right; font:30px Georgia,serif; font-variant-numeric:tabular-nums; }
+.qy-score-count-row b { text-align:right; font:15px Georgia,serif; }
+.qy-score-count-row.is-loss b { color:#ed9b86; }
+.qy-score-count-row.is-gain b { color:#bcd998; }
+.qy-score-show>p { color:#93ac84; font:11px "Microsoft YaHei",sans-serif; text-align:center; margin:24px 0 0; }
+@media(max-width:600px) { .qy-score-show{padding:22px}.qy-score-show h2{font-size:25px}.qy-score-count-row{grid-template-columns:1fr 1fr 70px;gap:6px}.qy-score-count-row strong{font-size:25px} }

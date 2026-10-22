@@ -315,6 +315,7 @@
   const soundCache = new Map();
 
   function resetStagePresentation(mode) {
+    window.QueYeStageShow?.cancel(mode);
     cueEpoch[mode]++;
     displayedStages[mode].clear();
     // Don't let cues from the previous match play during the new match.
@@ -398,6 +399,7 @@
         const { mode, epoch, characterId, stage, kind } = voiceQueue.shift();
         // Give the light portrait transition room to start before speaking.
         await sleep(200);
+        if (kind === 'win') await (window.QueYeStageShow?.whenIdle() || Promise.resolve());
         if (epoch !== cueEpoch[mode]) continue;
         showCharacterCue(characterId, stage, kind);
         if (!voiceEnabled) { await sleep(450); continue; }
@@ -554,7 +556,9 @@
     seen.set(seatIndex, Math.max(previousStage ?? 0, stage));
     if (advancing) {
       animatePortrait(widget, safeCharacterId, stage);
-      queueCharacterCue(mode, safeCharacterId, stage);
+      if (window.QueYeStageShow) {
+        if (mode === 'local') window.QueYeStageShow.enqueue({mode,seat:seatIndex,characterId:safeCharacterId,previousStage,stage});
+      } else queueCharacterCue(mode, safeCharacterId, stage);
     }
   }
   let lastLocalMatch = null;

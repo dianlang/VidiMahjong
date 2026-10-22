@@ -1,0 +1,33 @@
+'use strict';
+// DOM fixture only: does not verify real browser layout, audio decoding or networking.
+const fs=require('node:fs');
+const script=fs.readFileSync('tools/qa-dom.cjs','utf8');
+const prefix=script.slice(0,script.indexOf(" click('#btn-mode-local');"));
+const checks=`
+ click('#btn-mode-local');click('#setup-screen [data-character-id="character-01"]');click('#btn-start-match');
+ const p=()=>w.QueYeMatchPause.attach(w.qyFixture.current());
+ w.qyFixture.transfer(0,1,3000);await new Promise(resolve=>setTimeout(resolve,20));
+ const show=d.querySelector('#qy-stage-show');assert.equal(show.open,true);assert.equal(p().isPaused(),true);
+ assert.equal(show.querySelector('.qy-stage-line').textContent,'咦？披风扣子怎么松了……');assert.ok(show.querySelector('.qy-stage-after').src.endsWith('character-01/stage-1.png'));
+ const handBefore=w.qyFixture.handCount();click('.human-hand .htile');assert.equal(w.qyFixture.handCount(),handBefore);
+ click('.qy-stage-skip');assert.equal(show.open,false);assert.equal(p().isPaused(),false);
+ w.qyFixture.transfer(1,0,3000);await new Promise(resolve=>setTimeout(resolve,10));
+ if(show.open)click('.qy-stage-skip');
+ w.qyFixture.transfer(1,0,5000);w.qyFixture.transfer(2,0,8000);await new Promise(resolve=>setTimeout(resolve,10));
+ assert.equal(show.open,true);assert.ok(show.querySelector('h2').textContent.includes('阶段'));
+ click('.qy-stage-skip');assert.equal(show.open,true);click('.qy-stage-skip');assert.equal(show.open,false);
+ w.qyFixture.transfer(0,1,5000);await new Promise(resolve=>setTimeout(resolve,10));assert.equal(show.open,true);
+ click('#btn-start-match');assert.equal(show.open,false);assert.equal(p().isPaused(),false);
+ const room=new (require('../server/room.js').Room)('TEST',require('../server/shared-engine.js'));
+ for(let i=0;i<4;i++)room.addPlayer({readyState:1,send(){}},'p'+i,'P'+i,'character-0'+(i+1));room.start();
+ room.match.engine.seats[0].points-=8000;room.match.engine.seats[1].points+=8000;room.trackCumulativeLosses();
+ const state=JSON.parse(JSON.stringify(room.buildStateFor(0)));w.qyFixture.online(state);
+ assert.equal(show.open,true);assert.equal(show.querySelector('.qy-stage-skip').hidden,true);assert.ok(show.querySelector('.qy-stage-after').src.endsWith('character-01/stage-2.png'));
+ const firstImage=show.querySelector('.qy-stage-after').src;w.qyFixture.online(state);assert.equal(show.querySelector('.qy-stage-after').src,firstImage);
+ state.stagePresentation.remainingMs=0;w.qyFixture.online(state);assert.equal(show.open,false);
+ room.destroy();w.qyFixture.stop();assert.deepEqual(errors,[]);console.log('Stage DOM PASS: caption/art, blocked local action, skip/resume, multi-seat queue, reset cleanup, authoritative online show/repeat/expiry.');dom.window.close();
+})().catch(e=>{console.error(e);process.exit(1);});
+`;
+const helpers='window.qyFixture={stop:()=>match.stop(),current:()=>match,handCount:()=>match.engine.seats[0].hand.length,transfer:(from,to,n)=>{match.engine.seats[from].points-=n;match.engine.seats[to].points+=n;match.points=match.engine.seats.map(s=>s.points);renderAll();},online:st=>{onlineSeat=st.you.seat;onlineRoomCode="TEST";renderOnlineTable(st);}};';
+const source=prefix.replace('window.qyFixture={stop:()=>match.stop(),points:()=>match.engine.seats.map(s=>s.points)};',helpers)+checks;
+const Module=require('node:module');const file=new Module(__filename,module);file.filename=__filename;file.paths=module.paths;file._compile(source,__filename);
