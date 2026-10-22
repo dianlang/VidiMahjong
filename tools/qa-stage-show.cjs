@@ -8,7 +8,7 @@ const checks=`
  const p=()=>w.QueYeMatchPause.attach(w.qyFixture.current());
  w.qyFixture.transfer(0,1,3000);await new Promise(resolve=>setTimeout(resolve,20));
  const show=d.querySelector('#qy-stage-show');assert.equal(show.open,true);assert.equal(p().isPaused(),true);
- assert.equal(show.querySelector('.qy-stage-line').textContent,'咦？披风扣子怎么松了……');assert.ok(show.querySelector('.qy-stage-after').src.endsWith('character-01/stage-1.png'));
+ assert.equal(show.querySelector('.qy-stage-line').textContent,w.QueYeCharacters.get('character-01').stageLines[1]);assert.ok(show.querySelector('.qy-stage-after').src.endsWith('character-01/stage-1.png'));
  const handBefore=w.qyFixture.handCount();click('.human-hand .htile');assert.equal(w.qyFixture.handCount(),handBefore);
  click('.qy-stage-skip');assert.equal(show.open,false);assert.equal(p().isPaused(),false);
  w.qyFixture.transfer(1,0,3000);await new Promise(resolve=>setTimeout(resolve,10));
