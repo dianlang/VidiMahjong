@@ -1,0 +1,40 @@
+'use strict';
+// DOM integration fixture, not a real browser or visual/E2E acceptance test.
+// npm install --prefix .qa-deps jsdom
+const {JSDOM,VirtualConsole}=require('../.qa-deps/node_modules/jsdom');
+const fs=require('node:fs'),assert=require('node:assert/strict');
+(async()=>{
+ const errors=[];const virtualConsole=new VirtualConsole();virtualConsole.on('jsdomError',error=>errors.push(error.message));
+ const dom=new JSDOM(fs.readFileSync('traditional.html','utf8'),{url:'http://localhost:8765/traditional.html',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole});
+ const w=dom.window;await new Promise(resolve=>w.addEventListener('load',resolve,{once:true}));
+ const audio=[];
+ w.Audio=class{constructor(src){this.src=src;this.paused=true;this.currentTime=0;this.volume=1;audio.push(this);}play(){this.paused=false;return Promise.resolve();}pause(){this.paused=true;}load(){}addEventListener(){}removeEventListener(){}removeAttribute(name){delete this[name];}canPlayType(){return 'probably';}};
+ w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new w.Event('close'));};
+ const source=Array.from(w.document.querySelectorAll('script[src]'),script=>fs.readFileSync(script.getAttribute('src').split('?')[0],'utf8')).join('\n;\n');
+ w.eval(source+'\nwindow.qyFixture={stop:()=>match.stop(),points:()=>match.engine.seats.map(s=>s.points)};');
+ w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
+ const d=w.document,click=s=>{const node=d.querySelector(s);assert.ok(node,s);node.click();return node;};
+ click('#btn-mode-local');assert.equal(d.querySelectorAll('#setup-screen .character-choice').length,7);
+ click('#setup-screen [data-character-id="random"]');assert.equal(w.localStorage.getItem('vidimahjong-character-random'),'on');
+ click('#btn-start-match');w.qyFixture.stop();assert.match(w.localStorage.getItem('vidimahjong-character-id'),/^character-0[1-6]$/);
+ assert.equal(d.querySelectorAll('.qy-scores .qy-score-row').length,4);
+ const face=d.querySelector('.htile .qy-tile-svg');assert.ok(face,'SVG faces used by the actual hand renderer');
+ const openByText=text=>{const b=Array.from(d.querySelectorAll('.qy-tools button')).find(x=>x.textContent===text);assert.ok(b,text);b.click();};
+ openByText('役种');assert.equal(d.querySelectorAll('.qy-yaku-row').length,30);
+ const search=d.querySelector('.qy-yaku-search');search.value='七对子';search.dispatchEvent(new w.Event('input'));assert.equal(d.querySelectorAll('.qy-yaku-row').length,2);assert.ok(Array.from(d.querySelectorAll('.qy-yaku-row h3')).some(n=>n.textContent==='七对子'));d.querySelector('#qy-yaku-guide').close();
+ click('.human-hand .htile');
+ openByText('牌河');assert.equal(d.querySelectorAll('.qy-river-section').length,4);assert.equal(d.querySelectorAll('.qy-river-pile .mini-tile-chip').length,1);d.querySelector('#qy-rivers-dialog').close();
+ openByText('测试工具');assert.match(d.querySelector('#qy-score-calculation').textContent,/5,200/);
+ const simulation=d.querySelectorAll('.qy-test-section')[1];simulation.querySelector('input').value='15000';Array.from(simulation.querySelectorAll('button')).find(b=>b.textContent==='应用一次输赢').click();
+ assert.deepEqual(Array.from(w.qyFixture.points()),[10000,40000,25000,25000]);
+ assert.match(d.querySelector('#qy-test-message').textContent,/100,000/);
+ await new Promise(resolve=>setTimeout(resolve,950));
+ const widget=d.querySelector('.character-widget[data-character-seat="0"]');assert.match(widget.querySelector('.character-stage').textContent,/三/);
+ const selects=simulation.querySelectorAll('select');selects[0].value='1';selects[1].value='0';simulation.querySelector('input').value='15000';Array.from(simulation.querySelectorAll('button')).find(b=>b.textContent==='应用一次输赢').click();
+ await new Promise(resolve=>setTimeout(resolve,700));assert.match(d.querySelector('.character-widget[data-character-seat="0"] .character-stage').textContent,/三/);
+ Array.from(simulation.querySelectorAll('button')).find(b=>b.textContent==='新开本地测试局').click();w.qyFixture.stop();await new Promise(resolve=>setTimeout(resolve,700));assert.match(d.querySelector('.character-widget[data-character-seat="0"] .character-stage').textContent,/初始/);
+ d.dispatchEvent(new w.CustomEvent('queye:table-state',{detail:{online:true,riichi:true}}));Array.from(simulation.querySelectorAll('button')).find(b=>b.textContent==='应用一次输赢').click();assert.match(d.querySelector('#qy-test-message').textContent,/联机房间不能/);
+ assert.ok(audio.some(a=>a.src==='assets/bgm/riichi.mp3'));
+ assert.deepEqual(errors,[]);console.log('DOM fixture PASS: select/random, real hand SVG, 30-yaku search, four rivers, 5200 scoring, loss stage, no regression on gain, reset, online lock, riichi music.');
+ dom.window.close();
+})().catch(e=>{console.error(e);process.exit(1);});

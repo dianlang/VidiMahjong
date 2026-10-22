@@ -9,7 +9,7 @@
 - **构建器根目录**：`build.bat`、`build-from-upstream.ps1`、`patch/`、`RELEASE_NOTES_v3.md`、本交接文档。
 - **上游版本固定**：`VidiPT89/VidiMahjong`，提交 `e4207acd04887355c012ee2ab9d9456c4cbcb874`。
 - **构建完成后的完整游戏目录**：`traditional.html`、`index.html`、`js/`、`css/`、`server/`、`assets/`、`README_CN.md` 等；由 `build.bat` 联网生成 `VidiMahjong-zh-customized.zip`。
-- 本次新增的 `AGENTS.md`、`ARCHITECTURE.md`、`PROGRESS.md` 放在**构建器根目录**。现有构建脚本不会自动将这三份文档复制到构建产物；若交付生成后的游戏，请同时携带这些文档。
+- `AGENTS.md`、`ARCHITECTURE.md`、`PROGRESS.md` 放在**构建器根目录**。v6 起，构建脚本将这三份文档连同 `CHARACTER_GUIDE.md`、`RELEASE_NOTES_v6.md` 复制到完整游戏包；旧版构建器仍需手动携带。
 
 ## 1. 开发原则（所有后续协作者与 AI 代理必须遵守）
 

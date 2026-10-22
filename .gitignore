@@ -7,3 +7,5 @@
 node_modules/
 .npm-cache/
 release/
+.qa-deps/
+VidiMahjong-zh-customized.zip

@@ -22,6 +22,16 @@ try {
             Write-Warning "Download attempt failed: $($_.Exception.Message)"
         }
     }
+    # Some Windows PowerShell TLS stacks cannot reach GitHub; Node uses its own TLS stack.
+    if (-not $downloaded) {
+        $nodeCommand = Get-Command node -ErrorAction SilentlyContinue
+        if ($nodeCommand) {
+            & $nodeCommand.Source (Join-Path $Root 'tools\download-upstream.cjs') $urls[1] $Download
+            if ($LASTEXITCODE -eq 0 -and (Test-Path -LiteralPath $Download) -and (Get-Item -LiteralPath $Download).Length -gt 10000) {
+                $downloaded = $true
+            }
+        }
+    }
     if (-not $downloaded) {
         throw "Unable to download the upstream GitHub ZIP. Check GitHub connectivity and try again."
     }
@@ -41,6 +51,15 @@ try {
     Copy-Item (Join-Path $Root "patch\css\table-ui.css") (Join-Path $cssDir "table-ui.css") -Force
     Copy-Item (Join-Path $Root "patch\js\traditional\table-ui.js") (Join-Path $jsDir "table-ui.js") -Force
     Copy-Item (Join-Path $Root "patch\js\traditional\bgm.js") (Join-Path $jsDir "bgm.js") -Force
+    foreach ($module in @('characters', 'yaku-catalog', 'table-extras', 'dev-tools', 'ui-sfx')) {
+        Copy-Item (Join-Path $Root "patch\js\traditional\$module.js") (Join-Path $jsDir "$module.js") -Force
+    }
+    foreach ($sheet in @('character-select', 'table-extras')) {
+        Copy-Item (Join-Path $Root "patch\css\$sheet.css") (Join-Path $cssDir "$sheet.css") -Force
+    }
+    $tilesTarget = Join-Path $ProjectPath "assets\tiles"
+    New-Item -ItemType Directory -Force -Path $tilesTarget | Out-Null
+    Copy-Item (Join-Path $Root "patch\assets\tiles\*") $tilesTarget -Recurse -Force
     $bgmTarget = Join-Path $ProjectPath "assets\bgm"
     New-Item -ItemType Directory -Force -Path $bgmTarget | Out-Null
     Copy-Item (Join-Path $Root "patch\assets\bgm\*") $bgmTarget -Recurse -Force
@@ -69,10 +88,10 @@ try {
         $html = [regex]::Replace($html, '</head>', "  <link rel=`"stylesheet`" href=`"css/defeat-cg.css?v=4`">`r`n</head>", 1)
     }
     if ($html -notmatch 'js/traditional/defeat-cg\.js') {
-        $html = [regex]::Replace($html, '</body>', "  <script src=`"js/traditional/defeat-cg.js?v=5`"></script>`r`n</body>", 1)
+        $html = [regex]::Replace($html, '</body>', "  <script src=`"js/traditional/defeat-cg.js?v=6`"></script>`r`n</body>", 1)
     }
     if ($html -notmatch 'css/table-ui\.css') {
-        $html = [regex]::Replace($html, '</head>', "  <link rel=`"stylesheet`" href=`"css/table-ui.css?v=5.1`">`r`n</head>", 1)
+        $html = [regex]::Replace($html, '</head>', "  <link rel=`"stylesheet`" href=`"css/table-ui.css?v=6`">`r`n</head>", 1)
     }
     if ($html -notmatch 'js/traditional/table-ui\.js') {
         $html = [regex]::Replace($html, '</body>', "  <script src=`"js/traditional/table-ui.js?v=5.1`"></script>`r`n</body>", 1)
@@ -80,11 +99,18 @@ try {
     if ($html -notmatch 'js/traditional/bgm\.js') {
         $html = [regex]::Replace($html, '</body>', "  <script src=`"js/traditional/bgm.js?v=5.1`"></script>`r`n</body>", 1)
     }
+    # All additions are synchronous native scripts. Registry precedes every consumer.
+    $html = $html.Replace('  <script src="js/traditional/zh-custom.js?v=5"></script>', '  <script src="assets/characters/roster.js?v=6"></script><script src="js/traditional/characters.js?v=6"></script><script src="js/traditional/zh-custom.js?v=6"></script>')
+    $html = $html.Replace('  <script src="js/traditional/bgm.js?v=5.1"></script>', '  <script src="js/traditional/yaku-catalog.js?v=6"></script><script src="js/traditional/table-extras.js?v=6"></script><script src="js/traditional/dev-tools.js?v=6"></script><script src="js/traditional/ui-sfx.js?v=6"></script><script src="js/traditional/bgm.js?v=6"></script>')
+    $html = $html.Replace('</head>', '<link rel="stylesheet" href="css/character-select.css?v=6"><link rel="stylesheet" href="css/table-extras.css?v=6"></head>')
     Set-Content -LiteralPath $htmlPath -Value $html -Encoding UTF8
 
     Copy-Item (Join-Path $Root "patch\README_CN.md") (Join-Path $ProjectPath "README_CN.md") -Force
     Copy-Item (Join-Path $Root "patch\start-local.bat") (Join-Path $ProjectPath "start-local.bat") -Force
     Copy-Item (Join-Path $Root "patch\start-online-server.bat") (Join-Path $ProjectPath "start-online-server.bat") -Force
+    foreach ($document in @('AGENTS.md', 'ARCHITECTURE.md', 'PROGRESS.md', 'CHARACTER_GUIDE.md', 'RELEASE_NOTES_v6.md')) {
+        Copy-Item (Join-Path $Root $document) (Join-Path $ProjectPath $document) -Force
+    }
 
     function Replace-RequiredText([string]$FilePath, [string]$OldText, [string]$NewText, [string]$Label) {
         $source = Get-Content -LiteralPath $FilePath -Raw -Encoding UTF8
@@ -111,7 +137,7 @@ try {
     Replace-RequiredText $serverIndexPath "target.addPlayer(ws, msg.playerId, msg.name)" "target.addPlayer(ws, msg.playerId, msg.name, msg.characterId)" "join handshake character ID"
 
     $roomPath = Join-Path $ProjectPath "server\room.js"
-    Replace-RequiredText $roomPath "addPlayer(ws, playerId, name) {`r`n    this.lastActivityAt = Date.now();" "addPlayer(ws, playerId, name, characterId) {`r`n    this.lastActivityAt = Date.now();`r`n    const normalizedCharacterId = /^character-0[1-6]$/.test(characterId || '') ? characterId : null;" "room character ID parameter"
+    Replace-RequiredText $roomPath "addPlayer(ws, playerId, name) {`r`n    this.lastActivityAt = Date.now();" "addPlayer(ws, playerId, name, characterId) {`r`n    this.lastActivityAt = Date.now();`r`n    const normalizedCharacterId = require('../js/traditional/characters.js').has(characterId) ? characterId : null;" "room character ID parameter"
     Replace-RequiredText $roomPath "      this.seats[existing].ws = ws;`r`n      return { seatIndex: existing, reconnected: true };" "      this.seats[existing].ws = ws;`r`n      if (normalizedCharacterId) this.seats[existing].characterId = normalizedCharacterId;`r`n      return { seatIndex: existing, reconnected: true };" "reconnect character ID"
     Replace-RequiredText $roomPath '    this.seats[idx] = { ws, playerId, name: name || `Player ${idx + 1}` };' '    this.seats[idx] = { ws, playerId, name: name || `Player ${idx + 1}`, characterId: normalizedCharacterId };' 'store character ID in seat'
     Replace-RequiredText $roomPath "seats: this.seats.map((s) => (s ? { name: s.name, connected: !!s.ws } : null))," "seats: this.seats.map((s) => (s ? { name: s.name, connected: !!s.ws, characterId: s.characterId || null } : null))," "lobby character ID"
@@ -151,5 +177,13 @@ try {
     Write-Host "Build complete: $Output" -ForegroundColor Green
     Write-Host "Unzip it, then read README_CN.md. The original game engine is retained."
 } finally {
-    if (Test-Path $Work) { Remove-Item $Work -Recurse -Force -ErrorAction SilentlyContinue }
+    if (Test-Path -LiteralPath $Work) {
+        $resolvedWork = (Resolve-Path -LiteralPath $Work).Path
+        $resolvedTemp = [IO.Path]::GetFullPath($env:TEMP).TrimEnd('\')
+        if ((Split-Path -Parent $resolvedWork) -ne $resolvedTemp -or
+            (Split-Path -Leaf $resolvedWork) -notmatch '^vidimahjong-zh-[0-9a-f]{32}$') {
+            throw "Refusing cleanup outside the verified temporary build directory."
+        }
+        Remove-Item -LiteralPath $resolvedWork -Recurse -Force -ErrorAction SilentlyContinue
+    }
 }

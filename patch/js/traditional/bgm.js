@@ -18,7 +18,7 @@
     button.textContent = zh() ? `♫ 音乐${enabled ? '开' : '关'}` : `♫ Music ${enabled ? 'on' : 'off'}`;
     button.setAttribute('aria-label', zh() ? `背景音乐${enabled ? '开启' : '关闭'}` : `Background music ${enabled ? 'on' : 'off'}`);
     button.setAttribute('aria-pressed', String(enabled));
-    button.title = zh() ? '替换 assets/bgm/table.mp3 更换音乐' : 'Replace assets/bgm/table.mp3 to change music';
+    button.title = zh() ? '普通音乐：assets/bgm/table.mp3；立直音乐：assets/bgm/riichi.mp3' : 'Music: assets/bgm/table.mp3 and assets/bgm/riichi.mp3';
   }
   function play() {
     if (!enabled || unavailable.has(currentTrack) || document.hidden || !audio.paused) return;

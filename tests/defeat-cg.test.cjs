@@ -12,7 +12,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const js = fs.readFileSync(path.join(root, 'patch/js/traditional/defeat-cg.js'), 'utf8');
 const builder = fs.readFileSync(path.join(root, 'build-from-upstream.ps1'), 'utf8');
-const context = {window: {}, document: {}};
+const context = {window: {}, document: {}, QueYeCharacters: require('../js/traditional/characters.js')};
 vm.runInNewContext(js, context, {filename: 'defeat-cg.js'});
 const getLastPlace = context.window.QueYeDefeatCG.getLastPlace;
 
