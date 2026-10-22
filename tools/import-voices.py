@@ -70,6 +70,11 @@ def main():
             shutil.copyfile(file, target)
         (destination / 'voice-catalog.json').write_bytes(
             (json.dumps(catalog, ensure_ascii=False, indent=2) + '\n').encode('utf-8'))
+        (destination / 'voice-catalog.js').write_bytes(
+            ('/* Generated from the supplied voice manifest; see tools/import-voices.py. */\n'
+             '(function(root,factory){if(typeof module==="object"&&module.exports)module.exports=factory();'
+             'else root.QueYeVoiceCatalog=factory();})(typeof globalThis!=="undefined"?globalThis:this,function(){return '
+             + json.dumps(catalog, ensure_ascii=False, separators=(',', ':')) + ';});\n').encode('utf-8'))
         (destination / 'roster.js').write_bytes(
             (roster_text[:start] + json.dumps(roster, ensure_ascii=False, indent=2)
              + roster_text[end:]).encode('utf-8'))

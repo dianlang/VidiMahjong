@@ -3,7 +3,7 @@
 const fs=require('node:fs'),Module=require('node:module');
 const script=fs.readFileSync('tools/qa-dom.cjs','utf8');
 const prefix=script.slice(0,script.indexOf(" click('#btn-mode-local');"));
-const helpers='window.qyFixture={stop:()=>match.stop(),transfer:(from,to,n)=>{match.engine.seats[from].points-=n;match.engine.seats[to].points+=n;match.points=match.engine.seats.map(s=>s.points);renderAll();}};';
+const helpers='window.qyFixture={stop:()=>match.stop(),win:()=>{QueYeTestHands.win(match,{winner:0,from:1,winType:"ron",preset:"chiitoitsu"});return QueYeVoiceEvents.tier(match.engine.result.winners[0]);},transfer:(from,to,n)=>{match.engine.seats[from].points-=n;match.engine.seats[to].points+=n;match.points=match.engine.seats.map(s=>s.points);renderAll();}};';
 const checks=`
  const catalog=JSON.parse(fs.readFileSync('assets/characters/voice-catalog.json','utf8'));
  assert.equal(catalog.length,210);
@@ -20,15 +20,14 @@ const checks=`
  w.qyFixture.transfer(0,1,3000);await new Promise(resolve=>setTimeout(resolve,40));
  const show=d.querySelector('#qy-stage-show');assert.equal(show.open,true);
  assert.equal(show.querySelector('.qy-stage-line').textContent,catalog.find(r=>r.characterId==='character-01'&&r.event==='stage_1').textZh);
- assert.ok(finished.includes('assets/characters/character-01/voice/stage-1.wav'));
+ assert.ok(finished.includes('assets/characters/character-01/voice/stage_1.wav'));
  click('.qy-stage-skip');
- w.qyFixture.transfer(1,0,8000);await new Promise(resolve=>setTimeout(resolve,40));
- if(show.open)click('.qy-stage-skip');
- await new Promise(resolve=>setTimeout(resolve,500));
- assert.ok(finished.includes('assets/characters/character-01/voice/win.wav'));
- assert.ok(requests.includes('assets/characters/character-01/voice/win.ogg'));
+ const tier=w.qyFixture.win();await new Promise(resolve=>setTimeout(resolve,1700));
+ while(show.open)click('.qy-stage-skip');
+ await new Promise(resolve=>setTimeout(resolve,1500));
+ assert.ok(finished.includes('assets/characters/character-01/voice/'+tier+'.wav'));
  w.qyFixture.stop();assert.deepEqual(errors,[]);
- console.log('Voice DOM PASS: 210 recording hashes, matching stage subtitle, MP3/OGG -> WAV stage and win routing.');dom.window.close();
+ console.log('Voice DOM PASS: 210 recording hashes, matching stage subtitle, shared WAV stage channel and actual result tier routing.');dom.window.close();
 })().catch(e=>{console.error(e);process.exit(1);});
 `;
 const file=new Module(__filename,module);file.filename=__filename;file.paths=module.paths;
