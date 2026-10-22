@@ -7,7 +7,7 @@ test('one registry supports an additional character on browser and room server',
   const entries=[...roster,{id:'character-07',name:'新角色'}];
   const context={QueYeCharacterRoster:entries};vm.runInNewContext(read('js/traditional/characters.js'),context);
   const r=context.QueYeCharacters;assert.equal(r.ids.length,7);assert.equal(r.get('character-07').name,'新角色');assert.equal(r.stagePath('character-07',3),'assets/characters/character-07/stage-3.png');
-  const roomContext={module:{exports:{}},require:id=>{if(id==='./stage-presentation.js')return require('../server/stage-presentation.js');if(id==='./voice-events.js')return require('../server/voice-events.js');if(id==='./riichi-actions.js')return require('../server/riichi-actions.js');assert.equal(id,'../js/traditional/characters.js');return r;}};
+  const roomContext={module:{exports:{}},require:id=>{if(id==='./stage-presentation.js')return require('../server/stage-presentation.js');if(id==='./random-character.js')return require('../server/random-character.js');if(id==='./voice-events.js')return require('../server/voice-events.js');if(id==='./riichi-actions.js')return require('../server/riichi-actions.js');assert.equal(id,'../js/traditional/characters.js');return r;}};
   vm.runInNewContext(read('server/room.js'),roomContext);const room=new roomContext.module.exports.Room('TEST',{});
   room.addPlayer({},'p1','First','character-07');assert.equal(room.seats[0].characterId,'character-07');
   room.addPlayer({},'p2','Second','character-999');assert.equal(room.seats[1].characterId,null);

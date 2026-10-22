@@ -212,3 +212,7 @@ Windows：先 `build.bat`，再解压产物、启动本地静态文件或联机�
 ## v7.2 配音事件扩展
 
 新增末尾加载 voice-catalog.js → voice-events.js → voice-runtime.js。共享事件规划器仅消费已确认事件和公开结算；服务端 voice-events 扩展保存有界序列，在 buildStateFor 中过滤私有跳过反馈。前端按房间 session、sequence 及 hand 去重，共享单个角色音频通道，阶段演出抢占并阻止普通语音。stagePresentation.changes 逐个包含中间阶段，120 秒有界暂停适配器覆盖最长队列。详细契约及验证见 RELEASE_NOTES_v7.2.md。
+
+## v7.3 随机身份
+
+characters → random-character → zh-custom：共享角色会话维护已出现集合，首次累计失分达 3000 才揭晓特殊 character-random 身份。服务端 random-character 最后安装，包装 start／trackCumulativeLosses／buildStateFor／addPlayer，不改计分；按全部公开分配排除候选，并在首段变化附带旧剪影、专用字幕与静音标记。重连恢复服务端形态。stage-show 只在链的第一段使用旧身份，之后连续展示同一女性。

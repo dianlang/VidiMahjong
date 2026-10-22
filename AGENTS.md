@@ -131,3 +131,9 @@ Ubuntu 可以使用 `python3 -m http.server 8000` 临时测试静态页面，并
 - 新增 server/voice-events.js：voiceEvents 是只读表现状态，不接收客户端事件、分数或阶段；私有 pass 只下发本人，禁止附带暗牌或响应选项。前后端同版本更新并重启服务。
 - 跨阈值必须逐个播放中间阶段；changes 每项仅从 N 到 N+1。每段 6 秒，先旧立绘与台词，再抖动切换；阶段 5 录音只作为高失分末位结算台词，不改变四个阈值。
 - 角色语音由 voice-runtime 统一单通道；阶段抢占、结果等待阶段队列，避免重新引入旧通用大胜配音造成双播。缺录音静音，不得恢复系统朗读。
+
+## v7.3 随机身份约定
+
+- character-random 是成年男性剪影的保留 ID，registry.has 可接受但 registry.ids／entries 的女性池不包含它；不要把它写入女性 roster。
+- 首次累计失分达 3000 才从本场未出现女性中揭晓，后续本场固定，新场重置。联机只由 server/random-character 依据权威累计失分选择；重连不能改身份。
+- 变化链首段使用 fromCharacterId／transformationLine／silent，后续段清除这些标记，避免反复从男性变身。新惊讶台词无录音时保持静音。新增 randomPending 和首段表现字段需前后端同版本部署。

@@ -220,3 +220,12 @@
 - 自动测试（Windows / Node.js v24.21.0）：`npm test` 41 项全部通过，包含真实双 WebSocket 一手、点数一致与守恒。`node tools/qa-stage-show.cjs`、`node tools/qa-voice-events.cjs`、`node tools/qa-voice-import.cjs`、`node tools/qa-score-show.cjs`、`node tools/qa-dom.cjs`、`node tools/qa-riichi-dora.cjs` 均通过；包括连续队列、96 秒停顿、合法服务器行动、私有跳过过滤、重复状态静音、单通道、210 录音哈希及无系统合成语音。
 - 风险／人工：普通语音可能被阶段抢占，低优先级过期语音会丢弃，以避免积压。DOM／Audio 桩不是实机视觉或听感验收；真实手机／桌面音频、四真人整场与 Ubuntu 仍待检查。
 - 部署：新增只读 voiceEvents 状态，无新增客户端命令；前后端须同版本更新并重启 Node 服务（旧房间关闭）。完整构建、覆盖前备份和 G 盘逐文件哈希清单位于 release/，保留用户 E 盘原配音与模型配置。
+
+## v7.3 随机剪影变身（2026-10-22）
+
+- 范围：随机选项改为成年男性剪影入场；第一次累计失分达 3000 才选取本场未登场女性。多人同时变身依序排除已出现角色；新场重置，赢回分数和重连都不回退／重抽。首段显示精确惊讶字幕，后续阶段沿同一女性连续演出。新台词无录音时静音。
+- 文件：characters.js 保留 ID、共享 random-character.js、server/random-character.js、zh-custom／stage-show／voice-runtime／defeat-cg 适配及运行副本；生成素材在 patch/assets/characters/character-random/，同步 assets 副本。构建、缓存版本、文档和测试一并更新；六个受保护规则文件与四个失分阈值不变。
+- 素材：使用内置 image_gen 生成成年男性全身剪影，1024×1536 透明 PNG。Windows System.Drawing 检查角部与侧边 alpha 为 0，主体存在非零 alpha；最终提示词与生成模式保存在 ASSET_INFO.md。未改变已有女性立绘。
+- 自动测试（Windows / Node.js v24.21.0）：`npm test` 45 项全部通过，含真实双客户端一手及点数守恒；`node --test tests/random-character.test.cjs` 的四种核心场景通过。`node tools/qa-random-character.cjs` 核对实际按钮、主立绘、排除在场角色、精确字幕、首段静音、后续连续段、新局重置及联机角色；`node tools/qa-dom.cjs`、`node tools/qa-stage-show.cjs`、`node tools/qa-voice-events.cjs`、`node tools/qa-voice-import.cjs`、`node tools/qa-score-show.cjs` 均通过。
+- 风险／未验收：上述为文件、逻辑和 DOM／Audio 桩验证；生成图已目视检查，但游戏实际合成画面、换装节奏、音频听感、真人多窗口整场与 Ubuntu 部署仍待实测。
+- 部署：服务器控制随机形态与机器人角色，重连恢复原形态。新增 randomPending 与首段变身表现字段，需前后端同版本并重启 Node 服务，旧房间会关闭。完整构建和覆盖前备份／哈希清单在 release/ 留档；E 盘配音原始输出与配置未改动。
