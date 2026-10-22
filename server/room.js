@@ -5,6 +5,8 @@
  * guards) before it's allowed to change state, so a compromised or buggy
  * client can, at worst, get its own actions ignored. */
 
+const QueYeCharacters = require('../js/traditional/characters.js');
+
 const ROOM_IDLE_TTL_MS = 30 * 60 * 1000; // rooms with no connected player for this long are swept
 
 class Room {
@@ -40,7 +42,7 @@ class Room {
   /** Adds a new player, or reattaches an existing one's ws on reconnect. */
   addPlayer(ws, playerId, name, characterId) {
     this.lastActivityAt = Date.now();
-    const normalizedCharacterId = /^character-0[1-6]$/.test(characterId || '') ? characterId : null;
+    const normalizedCharacterId = QueYeCharacters.has(characterId) ? characterId : null;
     const existing = this.seatIndexForPlayerId(playerId);
     if (existing !== -1) {
       this.seats[existing].ws = ws;
