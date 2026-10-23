@@ -369,3 +369,12 @@
 
 - 构建器将 page-load 放在 head，原脚本相对顺序不变，统一注入静态中文和禁用初态，并复制 deploy 模板。tools/verify-build.py 检查新模块、部署模板、关键文字、固定上游与六个受保护文件。README canonical patch 与运行副本一起更新。
 - Windows / Node.js v24.21.0：`node --test tests/v6-modules.test.cjs` 6 项通过。完整构建命令 `powershell -NoProfile -ExecutionPolicy Bypass -File ./build-from-upstream.ps1` 和 `python tools/verify-build.py` 实际执行，ZIP 与 G 盘同步散列记录在 release/。云端只热更新 HTML 和启动 JS，不重启；安装脚本及连接配置留在忽略目录，不将私钥或凭证上传 GitHub。
+
+
+## v8.4 牌河同牌高亮（2026-10-24）
+
+- 范围／文件：table-extras.js／css 及 patch 副本，traditional.html／build-from-upstream.ps1 缓存版本，qa-river-highlight.cjs。鼠标经过手牌或牌河某张牌时，用青绿色描边标出四家可见牌河的相同牌；展开牌河面板同样支持，副露和宝牌提示区不参与。键盘 Tab／方向键聚焦手牌也提供提示，鼠标移出、窗口失焦、菜单切换、换场／换视角会清理。重绘时重新识别鼠标下的牌，缺失 SVG 回退仍按牌 ID 匹配，不触发出牌。
+- 规则／风险：只读取已渲染的公开牌面，不改麻将规则、分数、阈值、房间消息或受保护文件；保留宝牌金边、立直横牌和当前弃牌标记。描边可能受实际屏幕尺寸影响，真实浏览器／手机视觉待用户确认。
+- Windows / Node.js v24.21.0：`node tools/qa-river-highlight.cjs` 通过，覆盖本地四河、同牌精确匹配、无匹配、移出／键盘、鼠标不动时重绘、展开牌河、图像回退、联机座位旋转及清理。`node tools/qa-riichi-dora.cjs`、`node tools/qa-dom.cjs`、`node tools/qa-table-focus.cjs` 通过；`node --test tests/v6-modules.test.cjs` 6 项通过。DOM 测试不代替实机视觉验收。
+- 云端静态更新前，核对现有三个文件和发布清单散列，备份到 /opt/queye/backups/river-highlight-v8.4；先安装 JS／CSS 再原子替换同源 HTML，清单同步更新，服务 PID 保持 9365，未重启或关闭真人房间。`node release/qa-cloud-river-highlight.cjs` 从外网加载真正的 JS／CSS 与页面，验证启动完成、四家高亮和移出清除，无脚本错误。
+- 部署／交付：只需刷新页面，无服务端升级。源码、G 盘运行副本与 GitHub 按本批清单备份同步；固定 SHA 完整构建命令 `powershell -NoProfile -ExecutionPolicy Bypass -File ./build-from-upstream.ps1`，以及 `python tools/verify-build.py` 核验补丁／脚本顺序／交接文档及六个受保护文件。结果、备份和散列保存在 release/。

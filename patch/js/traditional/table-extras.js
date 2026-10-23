@@ -15,6 +15,37 @@
   let publicView=null;
   let online=false;
   let opener=null;
+  const riverTiles='#human-discards .mini-tile-chip,.opponent-discards .mini-tile-chip,.qy-river-pile .mini-tile-chip';
+  const hoverTiles='#human-hand .htile,'+riverTiles;
+  let hovered=null,pointer=null,input='keyboard',highlightOwner=null,highlightSeat=null;
+  const sourceTile=node=>node?.closest?.(hoverTiles)||null;
+  function highlightRivers(){
+    if(input==='pointer'&&hovered&&!hovered.isConnected){
+      hovered=pointer&&document.elementFromPoint?sourceTile(document.elementFromPoint(pointer.x,pointer.y)):null;
+    }
+    const source=input==='pointer'?hovered:sourceTile(document.activeElement);
+    const id=source?.querySelector('[data-qy-tile]')?.dataset.qyTile;
+    document.querySelectorAll(riverTiles).forEach(tile=>{
+      const visible=!tile.closest('#qy-rivers-dialog')||el('qy-rivers-dialog')?.open;
+      tile.classList.toggle('qy-river-match',!!id&&visible&&tile.querySelector('[data-qy-tile]')?.dataset.qyTile===id);
+    });
+  }
+  function clearRiverHighlight(){hovered=null;pointer=null;input='pointer';highlightRivers();}
+  function bindRiverHighlight(){
+    const point=event=>{
+      if(event.pointerType==='touch')return;
+      const target=sourceTile(event.type==='pointerout'?event.relatedTarget:event.target);
+      if(!target&&!hovered)return;
+      input='pointer';hovered=target;pointer=target?{x:event.clientX,y:event.clientY}:null;highlightRivers();
+    };
+    document.addEventListener('pointerover',point);document.addEventListener('pointerout',point);
+    document.addEventListener('pointermove',event=>{if(hovered&&event.pointerType!=='touch')pointer={x:event.clientX,y:event.clientY};},{passive:true});
+    document.addEventListener('keydown',event=>{if(['Tab','ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)){input='keyboard';hovered=null;pointer=null;highlightRivers();}},true);
+    document.addEventListener('focusin',highlightRivers);document.addEventListener('focusout',()=>queueMicrotask(highlightRivers));
+    document.addEventListener('pointercancel',clearRiverHighlight);window.addEventListener('blur',clearRiverHighlight);
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)clearRiverHighlight();});
+    document.addEventListener('queye:menu',clearRiverHighlight);
+  }
   function dialog(id,title){
     const d=make('dialog','qy-reference-dialog');d.id=id;
     const head=make('div','qy-reference-head');const h=make('h2','',title);h.id=`${id}-title`;d.setAttribute('aria-labelledby',h.id);
@@ -26,6 +57,7 @@
     const b=make('button',cls,label);b.type='button';b.addEventListener('click',()=>action(b));parent?.append(b);return b;
   }
   function init(){
+    bindRiverHighlight();
     const guide=dialog('qy-yaku-guide','役种说明');
     guide.append(make('p','qy-reference-intro','本游戏当前的役种与番数。门清：未吃、碰或明杠；暗杠不破坏门清。'));
     const search=make('input','qy-yaku-search');search.type='search';search.placeholder='搜索役种、番数或条件';search.setAttribute('aria-label','搜索役种');guide.append(search);
@@ -51,6 +83,7 @@
     guide.append(details);
     const credit=make('p','qy-art-credit','牌面素材：');const link=make('a','','FluffyStuff · CC0');link.href='https://github.com/FluffyStuff/riichi-mahjong-tiles';link.target='_blank';link.rel='noopener noreferrer';credit.append(link);guide.append(credit);
     const rivers=dialog('qy-rivers-dialog','四家牌河');rivers.append(make('p','qy-reference-intro','按弃牌顺序排列，每行六张。被吃碰的牌移入副露，不留在牌河；金边为当前待响应的弃牌。'));
+    rivers.addEventListener('close',clearRiverHighlight);
     const grid=make('div','qy-river-grid');grid.id='qy-river-grid';rivers.append(grid);
     document.querySelectorAll('#setup-screen .menu-buttons,#online-lobby-screen>.menu-content>.menu-buttons,#mode-select-screen .menu-buttons').forEach(parent=>addButton(parent,'役种说明',b=>show(guide,b),'btn btn-ghost'));
     const tools=document.querySelector('.qy-tools');addButton(tools,'役种',b=>show(guide,b));addButton(tools,'牌河',b=>{paintRivers();show(rivers,b);});
@@ -73,12 +106,15 @@
       if(seat.melds?.length){section.append(make('small','qy-river-count','副露'));const melds=make('div','qy-river-melds');seat.melds.forEach(m=>{const group=make('div','qy-meld-group');m.tiles.forEach(t=>group.append(chip(t)));melds.append(group);});section.append(melds);}
       grid.append(section);
     });
+    highlightRivers();
   }
   function update(st){
     const game=!online&&typeof match!=='undefined'?match?.engine:null;
     publicView=st||(game?{seats:game.seats,lastDiscard:game.lastDiscard,phase:game.phase,matchOver:match.matchOver}:null);
     if(!publicView)return;
     const me=online?st.you.seat:viewSeat;
+    const owner=online?onlineRoomCode:match;
+    if(owner!==highlightOwner||me!==highlightSeat){clearRiverHighlight();highlightOwner=owner;highlightSeat=me;}
     document.querySelectorAll('#opponents-row .opponent-panel').forEach((panel,index)=>{
       const seat=publicView.seats[(me+index+1)%4];const pile=panel.querySelector('.opponent-discards');
       pile.dataset.riverLabel=`${winds[seat.wind]}牌河 · ${seat.discards.length}`;
@@ -86,6 +122,7 @@
     });
     const own=el('human-discards');own.dataset.riverLabel=`你的牌河 · ${publicView.seats[me].discards.length}`;own.setAttribute('aria-label',own.dataset.riverLabel);decoratePile(own,publicView.seats[me],publicView.lastDiscard?.seat===me);
     if(el('qy-rivers-dialog')?.open)paintRivers();
+    highlightRivers();
     document.dispatchEvent(new CustomEvent('queye:table-state',{detail:{online,discardTotal:publicView.seats.reduce((sum,s)=>sum+s.discards.length,0),riichi:!publicView.matchOver&&publicView.seats.some(s=>s.riichi)}}));
   }
   function decoratePile(pile,seat,current){

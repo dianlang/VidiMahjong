@@ -36,6 +36,7 @@
 .qy-river-melds { display:flex; flex-wrap:wrap; gap:8px; }
 .qy-meld-group { display:flex; gap:2px; }
 .qy-river-empty { grid-column:1 / -1; color:#6c8d74; font-size:12px; padding:16px 0; }
+.qy-table .mini-tile-chip.qy-river-match,.qy-river-pile .mini-tile-chip.qy-river-match { outline:2px solid #82f5db; outline-offset:1px; filter:brightness(1.14); }
 .qy-test-columns { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
 .qy-test-section { background:#0b231c66; border:1px solid #8e9e7133; padding:18px; border-radius:6px; }
 .qy-test-section h3 { font-size:16px; color:#d5c292; margin:0 0 16px; }
