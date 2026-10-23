@@ -302,3 +302,9 @@
 - 范围／文件：online-resume.js／css 与 patch 副本。退出时清除旧房卡、座位和会话；开始按钮等待连接完成，增加退出／重试。返回主菜单改为雀夜选项页，清理本地比赛、演出和连接，防止跳进上游消消乐。
 - Windows / Node.js v24.21.0：`node tools/qa-online-resume.cjs` 通过；`node tools/qa-online-ui.cjs` 在隔离服务器与两个独立加载页面上验证实际建房、退出重进、返回正确页面／清除会话，无未捕获异常。后者同时依赖本批结算扩展，随集成提交入库。
 - 风险／人工：退出连接仍保留原服务器重连席位；不宣称释放座位或踢人。DOM 不是手机触控／视觉验收。部署文件暂在源码与新 ZIP，G 盘旧服务和房间尚未重启。
+
+
+## v8.2 手牌操作位置（2026-10-23）
+
+- 范围／文件：table-focus.js／css 与 patch 副本。将原动作按钮放进手牌前的独立容器，居中显示；状态提示和当前弃牌保留顶部。桌面、窄屏保持各自网格位置。
+- Windows / Node.js v24.21.0：`node tools/qa-table-focus.cjs`、`node tools/qa-riichi-dora.cjs`、`node tools/qa-play-options.cjs` 通过；双页面 `qa-online-ui.cjs` 断言手牌前的按钮容器，未改变合法操作。风险为实际屏幕布局，手机／桌面目视仍待人工检查；暂无自动测试失败。

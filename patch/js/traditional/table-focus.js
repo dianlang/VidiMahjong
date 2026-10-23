@@ -9,7 +9,8 @@
   section=make('section','qy-play-status');section.id='qy-play-status';section.setAttribute('aria-label','当前操作');
   const copy=make('div','qy-play-copy');title=make('strong');title.id='qy-play-title';title.setAttribute('role','status');title.setAttribute('aria-live','polite');detail=make('span');copy.append(title,detail);
   lastTile=make('div','qy-current-discard');lastTile.setAttribute('aria-label','当前弃牌');
-  const dock=make('div','qy-action-dock');dock.id='qy-action-dock';dock.append(byId('human-actions'));section.append(copy,lastTile,dock);
+  const dock=make('div','qy-action-dock');dock.id='qy-action-dock';dock.append(byId('human-actions'));
+  const stack=make('div','qy-hand-stack'),hand=byId('human-hand');hand.before(stack);stack.append(dock,hand);section.append(copy,lastTile);
   document.querySelector('.qy-workspace').before(section);
   const observer=new MutationObserver(()=>{if(!scheduled){scheduled=true;queueMicrotask(()=>{scheduled=false;update();});}});
   observer.observe(byId('human-actions'),{childList:true,subtree:true,characterData:true});observer.observe(byId('turn-hint'),{childList:true,characterData:true,subtree:true});
