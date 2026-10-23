@@ -111,5 +111,5 @@
   }
   const original=renderOnlineTable;renderOnlineTable=function(st){const result=original.call(this,st);onlineState(st);return result;};
   const start=document.getElementById('btn-start-match');start?.addEventListener('click',()=>cancel('local'),true);
-  window.QueYeStageShow=Object.freeze({enqueue,cancel,whenIdle});
+  window.QueYeStageShow=Object.freeze({enqueue,cancel,whenIdle,get busy(){return !!active||queue.length>0||!!startTimer;}});
 })();

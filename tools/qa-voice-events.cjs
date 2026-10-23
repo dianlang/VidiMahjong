@@ -32,7 +32,7 @@ const checks=`
  const count=requests.filter(p=>p==='assets/characters/character-02/voice/pon.wav').length;assert.equal(count,1);
  w.qyFixture.online(state);w.qyFixture.online(state);await new Promise(resolve=>setTimeout(resolve,1300));assert.equal(requests.filter(p=>p.endsWith('/pon.wav')).length,count);
  assert.equal(overlaps,1);assert.equal(spoken,0);
- room.destroy();w.QueYeVoices.reset();assert.deepEqual(errors,[]);console.log('Voice event DOM PASS: real local riichi deduplication, consecutive stage interruption, server-confirmed pon actor, repeated-state silence, one voice channel, no synthesis.');dom.window.close();
+ room.destroy();w.QueYeVoices.reset();assert.deepEqual(errors,[]);console.log('Voice event DOM PASS: real local riichi deduplication, consecutive queued stages without interruption, server-confirmed pon actor, repeated-state silence, one voice channel, no synthesis.');dom.window.close();
 })().catch(e=>{console.error(e);process.exit(1);});
 `;
 const file=new Module(__filename,module);file.filename=__filename;file.paths=module.paths;

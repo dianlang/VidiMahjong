@@ -308,3 +308,11 @@
 
 - 范围／文件：table-focus.js／css 与 patch 副本。将原动作按钮放进手牌前的独立容器，居中显示；状态提示和当前弃牌保留顶部。桌面、窄屏保持各自网格位置。
 - Windows / Node.js v24.21.0：`node tools/qa-table-focus.cjs`、`node tools/qa-riichi-dora.cjs`、`node tools/qa-play-options.cjs` 通过；双页面 `qa-online-ui.cjs` 断言手牌前的按钮容器，未改变合法操作。风险为实际屏幕布局，手机／桌面目视仍待人工检查；暂无自动测试失败。
+
+
+## v8.2 完整角色录音（2026-10-23）
+
+- 范围／文件：voice-runtime.js、stage-show.js 只读 busy 状态及 patch 副本，qa-voice-playback／qa-voice-events。改为等待录音 ended 的单通道队列，加载和播放分开计时；普通事件、阶段结束、下一手不抢断。显式静音／离开／新开比赛仍可停止，真实解码错误终止失败录音；无录音静音，无系统朗读。
+- 放铳录音从阶段后低优先级提升为紧随荣和的公开角色反应；跳过只显示字幕。自动播放被阻止时等待点击重试，不把浏览器限制误判为缺文件并连续换格式。
+- Windows / Node.js v24.21.0：`node tools/qa-voice-playback.cjs`、`node tools/qa-voice-events.cjs`、`node tools/qa-voice-import.cjs`、`node tools/qa-stage-show.cjs`、`node tools/qa-random-character.cjs` 通过，含慢加载、其他角色、不中断、无重叠、210 原录音散列及缺录音静音。Audio 桩不是实机解码或听感验收。
+- 风险：长录音可能延续到视觉演出结束后，后续语音等待；过期且未开始的录音丢弃防止积压。用户取消串角调查，本轮未改角色分配／演出绑定及素材。
