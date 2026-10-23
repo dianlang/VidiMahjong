@@ -342,3 +342,16 @@
 - G:\QueYe / Windows / Node.js v24.21.0 执行 `node --test tests/settlement-confirm.test.cjs tests/stage-presentation.test.cjs tests/v6-modules.test.cjs tests/reconnect-server.test.cjs tests/voice-events.test.cjs`：20 项通过。声音／视觉人工限制沿用上面记录。
 - 源码模块已推送 GitHub main（b500003），远端 API 核实同提交；收尾交接文档另行提交。完整构建及受保护文件校验通过，最终 ZIP 散列在 release/，不是已完成云部署的证明。
 - 云迁移当前等用户购买／提供服务器公网 IP、SSH 用户与端口或已配置别名，以及域名。已建议 Ubuntu Server 24.04 LTS x86_64 纯净系统镜像；没有服务器连接信息，尚未上传、安装或宣称云端上线。
+
+
+## v8.2 云服务器部署（2026-10-23）
+
+- 用户购买上海 ECS（2 vCPU / 2 GiB / Ubuntu 24.04 x86_64）并授权立即迁移，选择先用 IP 测试。阿里云官方 Workbench CLI v1.0.4 已安装到本机，下载包官方 SHA-256 核验通过；因本机未配置云账号凭证，改用用户在服务器网页终端明确添加的专用 SSH 公钥，核对用户返回的主机指纹后登录。私钥、known_hosts、安装包和目标 IP 只在忽略的 .local-tools／release 保存，不入 Git。
+- 部署模块：patch/deploy/{nginx-queye.conf,queye.service,README.md} 与运行副本，以及构建器／ZIP核验接入。独立用户 queye 运行官方 SHA 核验的 Node.js v24.22.1 LTS，Nginx 1.24.0 提供静态资源及同源 /ws；Node 只绑定 127.0.0.1:8080，systemd／Nginx 均已启用开机启动。发布目录 /opt/queye/releases/v8.2-20261023，current 指向此版本；旧默认站点已备份，代码／素材对游戏用户只读。
+- 部署包从已校验完整 ZIP 筛选游戏／服务器／素材，419 个条目，约 110.4 MB；上传前后核对 SHA-256，解包验证 418 个文件清单。部署专用 HTML 注入同源 /ws meta，不改源游戏规则。后续 Nginx 同源 Origin 校验配置另行核对散列后安装，并更新发布清单。构建器复制部署模板供下次复现。
+- Ubuntu 24.04.5 / Node.js v24.22.1：`nginx -t`、`systemd-analyze verify /etc/systemd/system/queye.service`、`systemctl is-active queye nginx`、`systemctl is-enabled queye nginx` 通过；依赖按原锁文件 `npm ci --omit=dev --ignore-scripts --no-audit --no-fund` 安装 1 个包，未升级游戏依赖。
+- Windows / Node.js v24.21.0 外网 `node release/qa-cloud-smoke.cjs` 验证网页版本、音频 Range 206／RIFF、工程路径拒绝、真实双客户端建房／加入／出牌同步、暗牌过滤与点数总和，并拒绝跨域 WS。详细端点、包散列、系统检查及整手确认验证记录保存在 release/，不把接口测试写成实机试听／手机视觉验收。
+- 部署中已解决：首次 npm 版本探测缺少专用 PATH，后续依赖安装已使用正确 PATH；Nginx 刚 reload 的立即探测遇到旧 worker 404，等待后同路径稳定 200，部署脚本补了有界重试。首次整手验收遇到流局桌面留有 1000 点立直棒，检查需将其计入守恒总和，已修正测试条件，未改计分逻辑。
+- 用户无域名，当前 HTTP/IP 地址作为部署测试入口；没有配置 HTTPS，也未替用户完成备案。大陆对外网站服务仍需按要求备案，IP 不是免备案方案。现有内存房间重启即清空，后续更新不能静默重启真人房间；真实浏览器、实际语音听感和更大并发仍需验收。
+
+- 云端整手最终验收（Windows / Node.js v24.21.0 外网客户端 → Ubuntu / Node.js v24.22.1）：`node release/qa-cloud-hand.cjs` 通过。真实双人和两 AI 完成一手，双方结束分数相同，点数加桌面立直棒总和 100000；确认 A 后等待 B，双方确认才进入第 2 手，选角正确且暗牌过滤。`python release/queye-remote.py release/server-final-verify.sh` 核验发布清单、六个受保护文件散列及服务状态通过。没有并发上限压测。

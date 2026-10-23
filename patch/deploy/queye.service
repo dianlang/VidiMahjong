@@ -1,0 +1,25 @@
+[Unit]
+Description=QueYe authoritative mahjong rooms
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=queye
+Group=queye
+WorkingDirectory=/opt/queye/current/server
+ExecStart=/opt/queye/node/bin/node index.js
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
+Environment=PORT=8080
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=15
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target
