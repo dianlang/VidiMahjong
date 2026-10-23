@@ -225,3 +225,10 @@ characters → random-character → zh-custom：共享角色会话维护已出�
 - `server/reconnect-view.js` 包装 buildStateFor，依据引擎当前反应与 LocalMatch 待处理席位，仅为接收者附上可恢复选项；断线广播仍不含暗牌。server/index.js 处理 ping/pong。前后端须同版本并重启服务。
 - 本机素材工具：`start-asset-manager.bat` → `tools/asset-manager-server.cjs`（127.0.0.1）→ `asset-store.cjs`。接口固定槽位、同源令牌、串行保存、旧哈希冲突检查；先备份、临时写入后重命名，失败回滚。游戏目录是导入与同步的现用来源，运行 assets 与 canonical patch/assets 始终一起保存。工具本身的 canonical 源位于 patch/tools，不属于联机服务器。
 - 本机双目录配置与备份不进入 Git。构建器携带管理页、启动器和两个原生 Node 工具，不引入前端框架或额外服务依赖。六个受保护文件及上游 SHA 保持不变。
+
+
+## v8.1 操作与临时试玩
+
+牌桌四个开关：自动过、禁止鸣牌、立直摸切、出牌确认，默认关闭。自动处理保留和牌与暗杠选择，断线／演出／后台时停下；详见 RELEASE_NOTES_v8.1.md。
+
+暂时和朋友测试可双击 start-friend-test.bat，朋友打开窗口给出的 HTTPS 地址进入好友对局，无需安装客户端。原权威服务器仍在你电脑运行，网页与 /ws 经同一临时入口，自动填好服务器地址并支持房间邀请。stop-friend-test.bat 可结束本工具启动的试玩。电脑必须保持开机联网；临时服务稳定性与国内线路需实测，不当作正式云服务器部署。素材管理和工程目录不对临时公网开放。

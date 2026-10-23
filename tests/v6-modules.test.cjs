@@ -46,7 +46,7 @@ test('all runtime module files and assets match canonical patch sources',()=>{
  for(const dir of ['js/traditional','css'])for(const name of fs.readdirSync('patch/'+dir))assert.equal(read(dir+'/'+name),read('patch/'+dir+'/'+name));
  for(const name of fs.readdirSync('patch/server'))assert.equal(read('server/'+name),read('patch/server/'+name));
  for(const name of fs.readdirSync('patch/tools'))assert.equal(read('tools/'+name),read('patch/tools/'+name));
- for(const name of ['asset-manager.html','start-asset-manager.bat','js/asset-manager.js'])assert.equal(read(name),read('patch/'+name));
+ for(const name of ['asset-manager.html','start-asset-manager.bat','start-friend-test.bat','stop-friend-test.bat','js/asset-manager.js'])assert.equal(read(name),read('patch/'+name));
  const tiles=fs.readdirSync('assets/tiles/Regular').filter(p=>p.endsWith('.svg'));assert.equal(tiles.length,34);
  assert.match(read('assets/tiles/LICENSE.md'),/public domain/);
  for(const tile of tiles){const text=read('assets/tiles/Regular/'+tile);assert.match(text,/<svg/);assert.doesNotMatch(text,/<script|(?:href|src)=["'](?:https?:|data:)/i);}
