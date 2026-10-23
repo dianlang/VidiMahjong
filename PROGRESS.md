@@ -325,3 +325,11 @@
 - 荣和动画明确显示放铳角色与实际扣分，先停留提示再滚动；正常明细至少等待 2.8 秒，自摸至少 1.9 秒，并等待和牌／放铳声音和阶段演出。之后通过确认按钮继续。
 - Windows / Node.js v24.21.0：完整 `npm test` 63 项通过；后续补充旧结算 ID／本地按钮清理／主菜单修复以 `node --test tests/settlement-confirm.test.cjs tests/stage-presentation.test.cjs tests/v6-modules.test.cjs` 13 项、`node tools/qa-score-show.cjs`、`node tools/qa-online-ui.cjs` 通过。双页面真实隔离 WebSocket 场景覆盖自摸和荣和、双方结算、放铳音频路径、演出后弹窗、各自确认和自动下一手；未宣称真实设备试听或四真人整场验收。
 - 部署影响：前后端同版本更新，必须重启 Node 服务才启用全员确认。旧服务器仍走旧下一局；当前 G 盘真人房间尚未被关闭。断线不自动确认，需原玩家重连。
+
+
+## v8.2 集成与待启用状态（2026-10-23）
+
+- 集成文件：traditional.html、build-from-upstream.ps1、tools/verify-build.py、qa-online-ui.cjs、v8.2 说明及协作／架构文档。新 CSS、缓存版本、服务器安装点与文档统一进入构建包，固定上游 SHA 不变。
+- Windows / Node.js v24.21.0／Python 3／Windows PowerShell：`powershell -NoProfile -ExecutionPolicy Bypass -File ./build-from-upstream.ps1`、`python tools/verify-build.py` 实际执行通过；ZIP 核对全 canonical patch、服务器扩展、脚本顺序、交接文档，六个受保护文件与固定上游逐字节一致。交付记录和 ZIP SHA-256 保存在 release/。
+- 同环境 `node tools/qa-dom.cjs`、`node tools/qa-friend-entry.cjs`、`node tools/qa-play-options.cjs` 通过；完整及专项测试见上面各模块。没有未解决的自动失败项；真实浏览器视觉、手机、实际试听、多真人整场仍未验收。
+- G:\QueYe 与修改前 Git HEAD 的 884 个跟踪文件核对未发现用户另改素材／代码。先准备新包、源码备份及有旧哈希保护的覆盖清单；G 盘文件与现有临时服务暂维持旧版，等待用户允许关闭当前房间后同步启用，不能把未重启写成已上线。

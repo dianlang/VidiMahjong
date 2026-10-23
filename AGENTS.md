@@ -137,3 +137,10 @@ Ubuntu 可以使用 `python3 -m http.server 8000` 临时测试静态页面，并
 - character-random 是成年男性剪影的保留 ID，registry.has 可接受但 registry.ids／entries 的女性池不包含它；不要把它写入女性 roster。
 - 首次累计失分达 3000 才从本场未出现女性中揭晓，后续本场固定，新场重置。联机只由 server/random-character 依据权威累计失分选择；重连不能改身份。
 - 变化链首段使用 fromCharacterId／transformationLine／silent，后续段清除这些标记，避免反复从男性变身。新惊讶台词无录音时保持静音。新增 randomPending 和首段表现字段需前后端同版本部署。
+
+
+## v8.2 用户授权补充（2026-10-23）
+
+用户明确选择“所有真人确认后进入下一局”。新增 server/settlement-confirm.js 和 settlementReady／confirmSettlement，只控制推进，不改变计分；确认座位从连接识别，不能相信客户端 seat 字段。电脑自动满足，断线真人保留等待重连确认，禁止静默超时跳过。旧 nextHand 只能确认本人。前后端同版本且需重启；当前房间在内存中，部署不得静默清空真人房间。
+
+用户要求语音播放后完整播完；普通事件、阶段结束及换手不得打断已开始录音。显式静音、离开／新开比赛和真实解码错误可结束声音。缺录音继续静音，不得使用系统朗读。用户已取消演出串角调查，本轮不要顺带改变角色选取／绑定。

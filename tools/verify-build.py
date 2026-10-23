@@ -26,8 +26,8 @@ with ZipFile(root / 'VidiMahjong-zh-customized.zip') as archive:
     scripts += ['js/traditional/play-policy.js','js/traditional/play-options.js','js/traditional/friend-entry.js']
     html = archive.read(entry).decode('utf-8-sig')
     assert [html.index(path) for path in scripts] == sorted(html.index(path) for path in scripts)
-    assert 'css/table-focus.css?v=8' in html
-    for document in ('AGENTS.md','PROGRESS.md','ARCHITECTURE.md','CHARACTER_GUIDE.md','RELEASE_NOTES_v6.md','RELEASE_NOTES_v7.md','RELEASE_NOTES_v7.2.md','RELEASE_NOTES_v7.3.md','RELEASE_NOTES_v8.md','RELEASE_NOTES_v8.1.md'):
+    assert 'css/table-focus.css?v=8.2' in html
+    for document in ('AGENTS.md','PROGRESS.md','ARCHITECTURE.md','CHARACTER_GUIDE.md','RELEASE_NOTES_v6.md','RELEASE_NOTES_v7.md','RELEASE_NOTES_v7.2.md','RELEASE_NOTES_v7.3.md','RELEASE_NOTES_v8.md','RELEASE_NOTES_v8.1.md','RELEASE_NOTES_v8.2.md'):
         assert archive.read(prefix+document) == (root/document).read_bytes(), document
     room = archive.read(prefix+'server/room.js').decode('utf-8-sig')
     assert "require('../js/traditional/characters.js').has(characterId)" in room
@@ -36,6 +36,8 @@ with ZipFile(root / 'VidiMahjong-zh-customized.zip') as archive:
     assert "require('./voice-events.js').install(Room)" in room
     assert "require('./random-character.js').install(Room)" in room
     assert "require('./reconnect-view.js').install(Room)" in room
+    assert "require('./settlement-confirm.js').install(Room)" in room
+    assert 'css/online-resume.css?v=8.2' in html
     assert "msg.type === 'ping' && Number.isSafeInteger(msg.pingId)" in archive.read(prefix+'server/index.js').decode('utf-8-sig')
     assert archive.read(prefix+'server/package.json')
     assert archive.read(prefix+'js/traditional/online.js')
