@@ -238,3 +238,11 @@
 - 今日功能验证已记录于 v7.3：Windows / Node.js v24.21.0，源码 `npm test` 45 项通过；G 盘 `node --test tests/random-character.test.cjs tests/voice-events.test.cjs tests/stage-presentation.test.cjs tests/riichi-rules.test.cjs tests/v6-modules.test.cjs tests/dev-hand-fixtures.test.cjs` 28 项通过。本次仅素材、锁文件与交接更新，不重复运行整场对局；构建和文件比对结果留档于 release/。
 - 下一次优先人工确认新立绘的实际合成画面、连续换装节奏和声音听感，再检查多窗口真人联机／重连。随机变身惊讶台词目前只有字幕，缺少对应录音时继续静音。联机新功能需要重启同版本服务器，今晚未替用户关闭现有房间。
 - 本次不新增功能；保留 E 盘配音生成工具与原始输出，开发运行入口及固定上游 SHA 不变。源码、G 盘游戏与 GitHub main 以收工校验清单核对。
+
+
+## v8 牌桌提示（2026-10-23，用户选项 1）
+
+- 范围／文件：table-focus.js、table-focus.css 与 patch 副本；stage-show.js 新增纯表现事件。固定操作区保留原按钮，突出当前回合／弃牌／立直摸切限制／本人响应，演出期间提示暂停；小屏主立绘放在独立区域，保留全屏查看与缩放。
+- 规则与素材：六个受保护文件、役种、计分、失分阈值与已有录音图片不变。风险为小屏滚动及布局，未宣称真实设备视觉验收。
+- 自动测试：Windows / Node.js v24.21.0，`node tools/qa-table-focus.cjs`、`node tools/qa-riichi-dora.cjs`、`node tools/qa-stage-show.cjs`、`node tools/qa-score-show.cjs`、`node tools/qa-dom.cjs` 通过；核对原按钮迁移、立直选择、暂停恢复、当前公开牌与连接提示。DOM 桩不能替代人工视觉／触控验收。
+- 部署：静态模块及缓存版本由构建器统一接入，不改支付方式。

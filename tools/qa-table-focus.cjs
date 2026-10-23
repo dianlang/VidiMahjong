@@ -1,0 +1,17 @@
+'use strict';
+// DOM integration only; does not establish real viewport layout or audio quality.
+const fs=require('node:fs'),Module=require('node:module');
+const script=fs.readFileSync('tools/qa-dom.cjs','utf8'),prefix=script.slice(0,script.indexOf(" click('#btn-mode-local');"));
+const helpers='window.qyFixture={stop:()=>match.stop(),setup:()=>{match.engine.seats[0].hand=["m1","m2","m3","m4","m5","m6","p1","p2","p3","s1","s2","s3","wE","dR"];match.engine.phase="discard";match.engine.currentSeat=0;match.engine.turnDrawnTile="dR";renderAll();},lock:()=>{match.engine.seats[0].riichi=true;renderAll();},pause:()=>QueYeMatchPause.attach(match),online:st=>{onlineSeat=st.you.seat;onlineRoomCode="QA";renderOnlineTable(st);}};';
+const checks=`
+ click('#btn-mode-local');click('#btn-start-match');w.qyFixture.setup();
+ assert.equal(d.querySelectorAll('#human-actions').length,1);assert.equal(d.querySelector('#human-actions').parentElement.id,'qy-action-dock');assert.equal(d.querySelector('#qy-play-title').textContent,'轮到你出牌');
+ click('[data-qy-riichi-start]');await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#qy-play-title').textContent,'选择立直舍牌');click('[data-qy-riichi-cancel]');await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#qy-play-title').textContent,'轮到你出牌');
+ w.qyFixture.lock();assert.match(d.querySelector('#qy-play-title').textContent,/立直中/);const pause=w.qyFixture.pause();pause.holdUntil(Date.now()+1000);d.dispatchEvent(new w.CustomEvent('queye:stage-state',{detail:{active:true}}));assert.equal(d.querySelector('#qy-play-status').dataset.state,'paused');pause.release();d.dispatchEvent(new w.CustomEvent('queye:stage-state',{detail:{active:false}}));assert.equal(d.querySelector('#qy-play-status').dataset.state,'action');
+ const room=new (require('../server/room.js').Room)('QA',require('../server/shared-engine.js'));for(let i=0;i<4;i++)room.addPlayer({readyState:1,send(){}},'p'+i,'P','character-0'+(i+1));room.start();const state=JSON.parse(JSON.stringify(room.buildStateFor(0)));state.phase='reaction';state.lastDiscard={seat:1,tile:'m5'};state.reactionPrompt={key:'restored',opts:{pon:true,kan:false,ron:false,chi:[]}};w.qyFixture.online(state);
+ assert.equal(d.querySelector('#qy-play-title').textContent,'请选择响应');assert.ok(d.querySelector('.qy-current-discard [data-qy-tile="m5"]'));d.dispatchEvent(new w.CustomEvent('queye:connection-state',{detail:{phase:'restoring'}}));assert.ok(d.querySelector('#table-screen').classList.contains('qy-network-blocked'));assert.equal(d.querySelector('#qy-play-title').textContent,'正在恢复连接');d.dispatchEvent(new w.CustomEvent('queye:connection-state',{detail:{phase:'connected'}}));assert.equal(d.querySelector('#table-screen').classList.contains('qy-network-blocked'),false);assert.equal(d.querySelector('#qy-play-title').textContent,'请选择响应');
+ assert.ok(d.querySelector('a[href="http://127.0.0.1:8766/asset-manager.html"]'));room.destroy();w.qyFixture.stop();assert.deepEqual(errors,[]);console.log('Table focus DOM PASS: original action buttons, riichi choice/lock, pause/resume, latest public discard, restored reaction and network input block.');dom.window.close();
+})().catch(e=>{console.error(e);process.exit(1);});
+`;
+const source=prefix.replace('window.qyFixture={stop:()=>match.stop(),points:()=>match.engine.seats.map(s=>s.points)};',helpers)+checks;
+const file=new Module(__filename,module);file.filename=__filename;file.paths=module.paths;file._compile(source,__filename);

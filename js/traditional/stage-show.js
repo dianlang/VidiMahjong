@@ -43,6 +43,7 @@
     if(queue.length){next();return;}
     if(dialog?.open)dialog.close();
     pause?.release();pause=null;owner=null;localDeadline=0;
+    document.dispatchEvent(new CustomEvent('queye:stage-state',{detail:{active:false}}));
     opener?.focus();opener=null;while(idle.length)idle.shift()();
   }
   function next(){
@@ -68,6 +69,7 @@
     if(!dialog.open)dialog.showModal();
     // Restart CSS animation without animation libraries or a browser fullscreen permission prompt.
     void dialog.offsetWidth;dialog.classList.add('is-running');play(item);timer=setTimeout(finish,length);
+    document.dispatchEvent(new CustomEvent('queye:stage-state',{detail:{active:true}}));
   }
   function enqueue(item){
     if(item.mode!=='local')return;
@@ -88,6 +90,7 @@
     if(active?.mode===mode){clearTimeout(timer);stopAudio();active=null;if(dialog?.open)dialog.close();}
     if(mode==='local'){owner?.stop();pause?.cancel();pause=null;owner=null;localDeadline=0;}
     if(!active&&!queue.length)while(idle.length)idle.shift()();
+    document.dispatchEvent(new CustomEvent('queye:stage-state',{detail:{active:!!active}}));
   }
   function onlineState(st){
     const room=typeof onlineRoomCode==='string'?onlineRoomCode:'online';
