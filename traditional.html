@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="css/dora-highlight.css?v=7">
 <link rel="stylesheet" href="css/riichi-ui.css?v=7">
 <link rel="stylesheet" href="css/score-show.css?v=8.2">
-<link rel="stylesheet" href="css/online-resume.css?v=8.2"><link rel="stylesheet" href="css/table-focus.css?v=8.2"><link rel="stylesheet" href="css/play-options.css?v=8.1"></head>
+<link rel="stylesheet" href="css/online-resume.css?v=8.2"><link rel="stylesheet" href="css/table-focus.css?v=8.2"><link rel="stylesheet" href="css/play-options.css?v=8.1"><script src="js/traditional/page-load.js?v=8.3"></script></head>
 <body>
 <div id="app">
 
@@ -32,17 +32,18 @@
     </button>
 
     <div class="menu-content">
-      <p class="eyebrow" data-i18n="tradSetupTitle">4 JOGADORES — RIICHI</p>
+      <p class="eyebrow" data-i18n="tradSetupTitle">四人立直麻将</p>
       <h1 class="brand-logo brand-logo--menu">
-        <span class="brand-vidi">Vidi</span><span class="brand-mahjong">Mahjong</span>
+        <span class="brand-vidi">雀</span><span class="brand-mahjong">夜</span>
       </h1>
-      <p class="menu-subtitle" data-i18n="tradSetupSubtitle"></p>
+      <p class="menu-subtitle" data-i18n="tradSetupSubtitle">选择真人座位，其余座位由 AI 补位。</p>
 
+      <p id="qy-page-load" role="status" aria-live="polite" style="color:#cbb887;font-size:13px;line-height:1.8"><span>正在准备牌桌……</span> <button type="button" class="btn btn-ghost" data-qy-page-retry hidden>重新加载</button></p>
       <div class="menu-buttons">
-        <button id="btn-mode-local" class="btn btn-primary" data-i18n="playLocal"></button>
-        <button id="btn-mode-online" class="btn btn-secondary" data-i18n="playOnline"></button>
-        <a class="btn btn-ghost" href="index.html?htp=riichi" data-i18n="howToPlay"></a>
-        <a class="btn btn-ghost" href="traditional.html" data-i18n="backToMenu"></a>
+        <button id="btn-mode-local" disabled class="btn btn-primary" data-i18n="playLocal">本地对局</button>
+        <button id="btn-mode-online" disabled class="btn btn-secondary" data-i18n="playOnline">在线联机</button>
+        <a class="btn btn-ghost" href="index.html?htp=riichi" data-i18n="howToPlay">玩法说明</a>
+        <a class="btn btn-ghost" href="traditional.html" data-i18n="backToMenu">返回主菜单</a>
       </div>
     </div>
 
@@ -60,11 +61,11 @@
     <div class="bg-glow" aria-hidden="true"></div>
 
     <div class="menu-content">
-      <p class="eyebrow" data-i18n="tradSetupTitle">4 JOGADORES — RIICHI</p>
+      <p class="eyebrow" data-i18n="tradSetupTitle">四人立直麻将</p>
       <h1 class="brand-logo brand-logo--menu">
-        <span class="brand-vidi">Vidi</span><span class="brand-mahjong">Mahjong</span>
+        <span class="brand-vidi">雀</span><span class="brand-mahjong">夜</span>
       </h1>
-      <p class="menu-subtitle" data-i18n="tradSetupSubtitle"></p>
+      <p class="menu-subtitle" data-i18n="tradSetupSubtitle">选择真人座位，其余座位由 AI 补位。</p>
 
       <div class="setup-card">
         <p class="setup-label" data-i18n="humanPlayers"></p>
@@ -88,9 +89,9 @@
     <div class="bg-glow" aria-hidden="true"></div>
 
     <div class="menu-content">
-      <p class="eyebrow" data-i18n="playOnline">ONLINE</p>
+      <p class="eyebrow" data-i18n="playOnline">在线联机</p>
       <h1 class="brand-logo brand-logo--menu">
-        <span class="brand-vidi">Vidi</span><span class="brand-mahjong">Mahjong</span>
+        <span class="brand-vidi">雀</span><span class="brand-mahjong">夜</span>
       </h1>
       <p class="menu-subtitle" data-i18n="onlineIntro"></p>
 
@@ -184,7 +185,7 @@
         <div id="final-standings"></div>
         <div class="modal-actions">
           <a class="btn btn-primary" href="traditional.html" data-i18n="startMatch"></a>
-          <a class="btn btn-ghost" href="traditional.html" data-i18n="backToMenu"></a>
+          <a class="btn btn-ghost" href="traditional.html" data-i18n="backToMenu">返回主菜单</a>
         </div>
       </div>
     </div>

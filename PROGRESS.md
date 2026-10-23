@@ -355,3 +355,11 @@
 - 用户无域名，当前 HTTP/IP 地址作为部署测试入口；没有配置 HTTPS，也未替用户完成备案。大陆对外网站服务仍需按要求备案，IP 不是免备案方案。现有内存房间重启即清空，后续更新不能静默重启真人房间；真实浏览器、实际语音听感和更大并发仍需验收。
 
 - 云端整手最终验收（Windows / Node.js v24.21.0 外网客户端 → Ubuntu / Node.js v24.22.1）：`node release/qa-cloud-hand.cjs` 通过。真实双人和两 AI 完成一手，双方结束分数相同，点数加桌面立直棒总和 100000；确认 A 后等待 B，双方确认才进入第 2 手，选角正确且暗牌过滤。`python release/queye-remote.py release/server-final-verify.sh` 核验发布清单、六个受保护文件散列及服务状态通过。没有并发上限压测。
+
+
+## v8.3 首次加载反馈（2026-10-23）
+
+- 用户截图显示菜单空白按钮，随后确认等待后会恢复。真实外网页面脚本加载无报错，原静态 HTML 按钮文字为空，要等全部脚本下载与 DOM 初始化才翻译。新增 page-load.js 与 patch 副本，初始菜单直接显示中文、品牌及准备提示；核心资源到齐才启用对局按钮，12 秒仍未完成提示加载较慢，脚本失败保留重试入口。
+- 范围：traditional.html、page-load.js 与 patch 源、qa-page-load.cjs、构建器和 ZIP 核验。仅启动界面，不改变规则、计分、联机状态或角色。热更新前备份云端 HTML 和清单，先安装新 JS 再原子替换 HTML；更新后服务 PID 不变，未关闭真人房间。
+- Windows / Node.js v24.21.0 / jsdom 30.1.3：`node tools/qa-page-load.cjs` 延迟／丢失真实脚本资源场景通过，验证初始化前中文可见、按钮等待、成功后启用及失败重试。`node tools/qa-dom.cjs`、`node tools/qa-friend-entry.cjs`、`node tools/qa-online-ui.cjs` 通过；外网 `node release/qa-cloud-page.cjs` 所有脚本无错误、中文完整，`node release/qa-cloud-smoke.cjs` 通过。最初 QA 使用旧 jsdom ResourceLoader 接口失败，已改为实际 HTTP 延迟测试，未改游戏依赖。
+- 风险／人工：静态文字与 JS 翻译仍需同步，构建检查覆盖关键按钮。真实手机和浏览器加载观感仍由用户确认，不将 DOM 桩写成真实视觉验收。
