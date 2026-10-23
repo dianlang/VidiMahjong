@@ -216,3 +216,12 @@ Windows：先 `build.bat`，再解压产物、启动本地静态文件或联机�
 ## v7.3 随机身份
 
 characters → random-character → zh-custom：共享角色会话维护已出现集合，首次累计失分达 3000 才揭晓特殊 character-random 身份。服务端 random-character 最后安装，包装 start／trackCumulativeLosses／buildStateFor／addPlayer，不改计分；按全部公开分配排除候选，并在首段变化附带旧剪影、专用字幕与静音标记。重连恢复服务端形态。stage-show 只在链的第一段使用旧身份，之后连续展示同一女性。
+
+
+## v8 增量调用链
+
+- 原渲染／立直模块 → `table-focus.js` 将原 `human-actions` 移至独立操作区，读取公开牌桌状态。`stage-show.js` 派发表现事件供提示刷新，不参与规则。
+- `reconnect-client.js` 独立管理连接、心跳、退避与会话，`online-resume.js` 适配现有 onlineConnect／onlineSend；收到权威 state 后再解锁并恢复本人 reactionPrompt，旧连接回调按代次失效，行动从不排队重发。
+- `server/reconnect-view.js` 包装 buildStateFor，依据引擎当前反应与 LocalMatch 待处理席位，仅为接收者附上可恢复选项；断线广播仍不含暗牌。server/index.js 处理 ping/pong。前后端须同版本并重启服务。
+- 本机素材工具：`start-asset-manager.bat` → `tools/asset-manager-server.cjs`（127.0.0.1）→ `asset-store.cjs`。接口固定槽位、同源令牌、串行保存、旧哈希冲突检查；先备份、临时写入后重命名，失败回滚。游戏目录是导入与同步的现用来源，运行 assets 与 canonical patch/assets 始终一起保存。工具本身的 canonical 源位于 patch/tools，不属于联机服务器。
+- 本机双目录配置与备份不进入 Git。构建器携带管理页、启动器和两个原生 Node 工具，不引入前端框架或额外服务依赖。六个受保护文件及上游 SHA 保持不变。

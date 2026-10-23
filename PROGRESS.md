@@ -266,3 +266,15 @@
 
 
 - v8 素材管理补检：导出的完整游戏包初始不含 patch/，管理工具现在以实际游戏角色表识别目录，首次保存时创建 canonical 副本。Windows / Node.js v24.21.0，`node --test tests/asset-manager.test.cjs tests/v6-modules.test.cjs` 12 项通过（素材管理 6 项），覆盖全新解压目录直接导入；未要求用户手建 patch 目录。
+
+
+## v8 集成与交付
+
+- 集成文件：traditional.html、build-from-upstream.ps1、tests/v6-modules.test.cjs、tools/verify-build.py、README_CN／角色指南／架构／v8 说明。构建器保留固定上游 SHA，增加四个顺序加载模块、两张样式表、本机管理页与启动器、工具副本和服务端心跳／恢复状态扩展；交接文档一并装入 ZIP。
+- 自动回归环境 Windows / Node.js v24.21.0：`npm test` 55 项通过，含真实双客户端一手结束、双方点数一致与总和 100000。之后新增的导出目录兼容修复已以 `node --test tests/asset-manager.test.cjs tests/v6-modules.test.cjs` 12 项通过，不把静态检查写成端到端验收。
+- 页面 DOM 集成命令：`node tools/qa-stage-show.cjs`、`node tools/qa-voice-events.cjs`、`node tools/qa-score-show.cjs`、`node tools/qa-riichi-dora.cjs`、`node tools/qa-dom.cjs`、`node tools/qa-table-focus.cjs`、`node tools/qa-online-resume.cjs`、`node tools/qa-assets-ui.cjs`、`node tools/qa-voice-import.cjs` 均通过；包括 210 录音哈希、原动作按钮、连续演出与单通道语音，不含真人音频或手机视觉验收。
+- 交付验证命令：`powershell -NoProfile -ExecutionPolicy Bypass -File ./build-from-upstream.ps1`、`python tools/verify-build.py`；记录位于忽略于 Git 的 release/。G 盘同步逐文件预检旧哈希、覆盖前备份并核对新哈希；同步期间发现新素材应保留回填，不静默覆盖。
+- 风险／未通过项：无已知失败自动用例；真实浏览器手机／桌面视觉、实际录音解码听感、多真人整场和 Ubuntu 仍待人工验收。联机需同版本部署重启，不能承诺跨服务器重启保留内存房间。素材管理默认本机 8766，原游戏入口与启动方式保留。
+
+- 实际交付结果：固定 SHA 完整构建及 `python tools/verify-build.py` 通过，六个受保护文件与原版逐字节相同；从新 ZIP 提取管理工具，在没有 patch/ 的临时目录实际启动、列出七个入口并新增角色／备份／回填 canonical 成功。47 个变更文件覆盖前备份后同步 G 盘，全项目 859 个跟踪／新增文件哈希核对一致。
+- G 盘最初缺少 ws 依赖，已在 G:\QueYe\server 执行 `npm ci --ignore-scripts --no-audit --no-fund`，按现有锁文件安装且不升级。随后在 G:\QueYe 执行 `node --test tests/asset-manager.test.cjs tests/reconnect-client.test.cjs tests/reconnect-server.test.cjs tests/v6-modules.test.cjs tests/riichi-rules.test.cjs tests/stage-presentation.test.cjs`：27 项全部通过（Windows / Node.js v24.21.0），包括真实断线恢复；初次因缺依赖失败已解决。

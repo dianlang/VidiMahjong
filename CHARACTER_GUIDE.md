@@ -35,3 +35,10 @@ v7.2 已绑定全部事件类别，触发条件见 RELEASE_NOTES_v7.2.md。四�
 ## 随机隐藏身份（v7.3）
 
 character-random 是固定保留 ID，不应复制到 roster 作为第七个女性角色。它的成年男性剪影在 assets/characters/character-random/stage-0.png。随机池仅使用 roster 的女性条目；首次跨门槛从本场未出现者中抽取，身份在本场固定。新增女性会自动进入未登场候选池。首段专用惊讶字幕没有录音时静音，后续阶段使用选中角色的正常录音。
+
+
+## v8 素材管理入口
+
+双击完整游戏目录中的 `start-asset-manager.bat`，在自动打开的本机页面预览／替换立绘、试听／导入配音、编辑中日台词和新增角色。游戏本地菜单也有入口。每次覆盖前自动备份，并同步 `assets/` 与 `patch/assets/`；其他电脑默认管理启动目录，本机通过忽略于 Git 的 `asset-manager.local.json` 关联 C 盘源码与 G 盘游戏。批量命名、限制、备份位置与联机重启要求见 [RELEASE_NOTES_v8.md](RELEASE_NOTES_v8.md)。
+
+v8 同时增加牌桌操作提示与自动重连；恢复使用服务器的原座位、角色、阶段及本人响应选项，断线动作不补发。前后端一起更新，重启联机服务后生效。
