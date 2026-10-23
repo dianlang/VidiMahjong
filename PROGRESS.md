@@ -363,3 +363,9 @@
 - 范围：traditional.html、page-load.js 与 patch 源、qa-page-load.cjs、构建器和 ZIP 核验。仅启动界面，不改变规则、计分、联机状态或角色。热更新前备份云端 HTML 和清单，先安装新 JS 再原子替换 HTML；更新后服务 PID 不变，未关闭真人房间。
 - Windows / Node.js v24.21.0 / jsdom 30.1.3：`node tools/qa-page-load.cjs` 延迟／丢失真实脚本资源场景通过，验证初始化前中文可见、按钮等待、成功后启用及失败重试。`node tools/qa-dom.cjs`、`node tools/qa-friend-entry.cjs`、`node tools/qa-online-ui.cjs` 通过；外网 `node release/qa-cloud-page.cjs` 所有脚本无错误、中文完整，`node release/qa-cloud-smoke.cjs` 通过。最初 QA 使用旧 jsdom ResourceLoader 接口失败，已改为实际 HTTP 延迟测试，未改游戏依赖。
 - 风险／人工：静态文字与 JS 翻译仍需同步，构建检查覆盖关键按钮。真实手机和浏览器加载观感仍由用户确认，不将 DOM 桩写成真实视觉验收。
+
+
+## v8.3 构建与备份收尾（2026-10-23）
+
+- 构建器将 page-load 放在 head，原脚本相对顺序不变，统一注入静态中文和禁用初态，并复制 deploy 模板。tools/verify-build.py 检查新模块、部署模板、关键文字、固定上游与六个受保护文件。README canonical patch 与运行副本一起更新。
+- Windows / Node.js v24.21.0：`node --test tests/v6-modules.test.cjs` 6 项通过。完整构建命令 `powershell -NoProfile -ExecutionPolicy Bypass -File ./build-from-upstream.ps1` 和 `python tools/verify-build.py` 实际执行，ZIP 与 G 盘同步散列记录在 release/。云端只热更新 HTML 和启动 JS，不重启；安装脚本及连接配置留在忽略目录，不将私钥或凭证上传 GitHub。

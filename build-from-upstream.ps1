@@ -51,7 +51,7 @@ try {
     Copy-Item (Join-Path $Root "patch\css\table-ui.css") (Join-Path $cssDir "table-ui.css") -Force
     Copy-Item (Join-Path $Root "patch\js\traditional\table-ui.js") (Join-Path $jsDir "table-ui.js") -Force
     Copy-Item (Join-Path $Root "patch\js\traditional\bgm.js") (Join-Path $jsDir "bgm.js") -Force
-    foreach ($module in @('characters', 'yaku-catalog', 'table-extras', 'dev-tools', 'ui-sfx', 'match-pause', 'stage-show', 'dora-highlight', 'riichi-rules', 'riichi-ui', 'settlement', 'score-show', 'dev-hand-fixtures', 'voice-events', 'voice-runtime', 'random-character', 'reconnect-client', 'online-resume', 'table-focus', 'asset-entry', 'play-policy', 'play-options')) {
+    foreach ($module in @('characters', 'yaku-catalog', 'table-extras', 'dev-tools', 'ui-sfx', 'match-pause', 'stage-show', 'dora-highlight', 'riichi-rules', 'riichi-ui', 'settlement', 'score-show', 'dev-hand-fixtures', 'voice-events', 'voice-runtime', 'random-character', 'reconnect-client', 'online-resume', 'table-focus', 'asset-entry', 'play-policy', 'play-options', 'page-load')) {
         Copy-Item (Join-Path $Root "patch\js\traditional\$module.js") (Join-Path $jsDir "$module.js") -Force
     }
     foreach ($sheet in @('character-select', 'table-extras', 'stage-show', 'dora-highlight', 'riichi-ui', 'score-show', 'table-focus', 'asset-manager', 'play-options', 'online-resume')) {
@@ -106,6 +106,17 @@ try {
     $html = $html.Replace('</head>', '<link rel="stylesheet" href="css/online-resume.css?v=8.2"><link rel="stylesheet" href="css/table-focus.css?v=8.2"><link rel="stylesheet" href="css/play-options.css?v=8.1"></head>')
     $html = $html.Replace('</body>', '<script src="js/traditional/play-policy.js?v=8.1"></script><script src="js/traditional/play-options.js?v=8.1"></script><script src="js/traditional/friend-entry.js?v=8.1"></script></body>')
     $html = $html.Replace('href="index.html"', 'href="traditional.html"')
+    # Static Chinese menu remains readable before synchronous scripts finish loading.
+    $initialLabels = @{ tradSetupTitle = '四人立直麻将'; tradSetupSubtitle = '选择真人座位，其余座位由 AI 补位。'; playLocal = '本地对局'; playOnline = '在线联机'; howToPlay = '玩法说明'; backToMenu = '返回主菜单' }
+    foreach ($key in $initialLabels.Keys) {
+        $pattern = '(<[^>]+data-i18n="' + $key + '"[^>]*>)[^<]*(</[^>]+>)'
+        $replacement = '${1}' + $initialLabels[$key] + '${2}'
+        $html = [regex]::Replace($html, $pattern, $replacement)
+    }
+    $html = $html.Replace('>Vidi</span>', '>雀</span>').Replace('>Mahjong</span>', '>夜</span>')
+    $html = $html.Replace('id="btn-mode-local"', 'id="btn-mode-local" disabled').Replace('id="btn-mode-online"', 'id="btn-mode-online" disabled')
+    $html = $html.Replace('<div class="menu-buttons">', '<p id="qy-page-load" role="status" aria-live="polite" style="color:#cbb887;font-size:13px;line-height:1.8"><span>正在准备牌桌……</span> <button type="button" class="btn btn-ghost" data-qy-page-retry hidden>重新加载</button></p>' + '<div class="menu-buttons">')
+    $html = $html.Replace('</head>', '<script src="js/traditional/page-load.js?v=8.3"></script></head>')
     Set-Content -LiteralPath $htmlPath -Value $html -Encoding UTF8
     Copy-Item (Join-Path $Root "patch\asset-manager.html") (Join-Path $ProjectPath "asset-manager.html") -Force
     Copy-Item (Join-Path $Root "patch\start-asset-manager.bat") (Join-Path $ProjectPath "start-asset-manager.bat") -Force
@@ -116,6 +127,9 @@ try {
     $toolsTarget = Join-Path $ProjectPath "tools"
     New-Item -ItemType Directory -Force -Path $toolsTarget | Out-Null
     Copy-Item (Join-Path $Root "patch\tools\*.cjs") $toolsTarget -Force
+    $deployTarget = Join-Path $ProjectPath "deploy"
+    New-Item -ItemType Directory -Force -Path $deployTarget | Out-Null
+    Copy-Item (Join-Path $Root "patch\deploy\*") $deployTarget -Force
 
     Copy-Item (Join-Path $Root "patch\README_CN.md") (Join-Path $ProjectPath "README_CN.md") -Force
     Copy-Item (Join-Path $Root "patch\start-local.bat") (Join-Path $ProjectPath "start-local.bat") -Force
