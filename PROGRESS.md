@@ -278,3 +278,11 @@
 
 - 实际交付结果：固定 SHA 完整构建及 `python tools/verify-build.py` 通过，六个受保护文件与原版逐字节相同；从新 ZIP 提取管理工具，在没有 patch/ 的临时目录实际启动、列出七个入口并新增角色／备份／回填 canonical 成功。47 个变更文件覆盖前备份后同步 G 盘，全项目 859 个跟踪／新增文件哈希核对一致。
 - G 盘最初缺少 ws 依赖，已在 G:\QueYe\server 执行 `npm ci --ignore-scripts --no-audit --no-fund`，按现有锁文件安装且不升级。随后在 G:\QueYe 执行 `node --test tests/asset-manager.test.cjs tests/reconnect-client.test.cjs tests/reconnect-server.test.cjs tests/v6-modules.test.cjs tests/riichi-rules.test.cjs tests/stage-presentation.test.cjs`：27 项全部通过（Windows / Node.js v24.21.0），包括真实断线恢复；初次因缺依赖失败已解决。
+
+
+## v8.1 操作设置（2026-10-23）
+
+- 用户选择先优化操作：自动过、禁止鸣牌、立直摸切、可选出牌确认。新增 play-policy.js / play-options.js / play-options.css 与 canonical 副本；加载顺序在现有渲染、立直、重连后，不编辑六个受保护文件或计分公式。
+- 默认四项关闭；设备本地保存。自动过与禁止鸣牌绝不自动放弃荣和，立直摸切遇到自摸／暗杠／宣言待选时停下；暂停、弹窗、后台和断线时停止计时。必须在新服务器视图到达后重新判断，重复状态不会重复执行。确认选牌随手牌／回合变化失效，立直使用原确认，不重复确认。
+- Windows / Node.js v24.21.0：`node --test tests/play-policy.test.cjs` 2 项通过；`node tools/qa-play-options.cjs` 验证实际本地摸切、逐个本地真人过、荣和保留、二次确认与取消、原立直、联机自动过／摸切去重、重连等待、自摸／暗杠／暂停保护、设置保存。`node tools/qa-table-focus.cjs`、`node tools/qa-online-resume.cjs`、`node tools/qa-dom.cjs` 通过。无真人手机视觉／触控验收，不将 DOM 结果冒充实机。
+- 集成回归：同环境 `npm test` 59 项通过，含真实双客户端一手结束与点数守恒；随后连接恢复的自动操作收尾调整已由上述 DOM 场景验证。构建仍固定上游 e4207acd04887355c012ee2ab9d9456c4cbcb874，加载与 ZIP 核验见交付记录。
