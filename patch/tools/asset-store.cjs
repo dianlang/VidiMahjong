@@ -20,7 +20,7 @@ function soundDuration(data,ext,fallback){
 }
 function createStore({sourceRoot,gameRoot}){
  sourceRoot=path.resolve(sourceRoot);gameRoot=path.resolve(gameRoot);const roots=[...new Set([sourceRoot,gameRoot])];
- for(const root of roots)if(!fs.existsSync(path.join(root,'patch/assets/characters/roster.js')))error('请选择完整的雀夜工程目录',500);
+ for(const root of roots)if(!fs.existsSync(path.join(root,'assets/characters/roster.js')))error('请选择完整的雀夜游戏目录',500);
  const historyRoot=inside(sourceRoot,'release/asset-manager');
  function load(){const bytes=fs.readFileSync(inside(gameRoot,'assets/characters/roster.js'));const parsed=rosterFrom(bytes);const catalog=JSON.parse(fs.readFileSync(inside(gameRoot,'assets/characters/voice-catalog.json'),'utf8'));return{...parsed,catalog,catalogHash:digest(Buffer.from(JSON.stringify(catalog)))};}
  function info(relative){const file=inside(gameRoot,relative),bytes=read(file);return{exists:!!bytes,bytes:bytes?.length||0,sha256:bytes?digest(bytes):null,url:'/'+relative+(bytes?'?v='+digest(bytes).slice(0,12):'')};}

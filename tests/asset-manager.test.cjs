@@ -27,6 +27,10 @@ test('a write failure rolls back earlier copies and leaves the original in the b
  for(const root of [f.sourceRoot,f.gameRoot])for(const prefix of ['','patch/']){const file=path.join(root,prefix,'assets/characters/character-01/stage-0.png');assert.deepEqual(fs.readFileSync(file),png);assert.ok(fs.readdirSync(path.dirname(file)).every(name=>!name.includes('.qy-')));}
  assert.ok(f.store.history().length>=2);
 });
+test('fresh game export without a patch directory can import and create canonical copies',t=>{
+ const f=fixture(t),patch=path.resolve(f.gameRoot,'patch');assert.ok(patch.startsWith(path.resolve(f.gameRoot)+path.sep));fs.rmSync(patch,{recursive:true,force:true});
+ const store=createStore({sourceRoot:f.gameRoot,gameRoot:f.gameRoot});store.importFiles({files:[image('stage-0')]});assert.deepEqual(fs.readFileSync(path.join(patch,'assets/characters/character-01/stage-0.png')),png);
+});
 test('voice aliases, duration, preferred format and captions stay synchronized; new character needs no assets',t=>{
  const f=fixture(t);const row=f.store.snapshot().characters[0].voices.find(v=>v.event==='stage_1');assert.equal(row.exists,false);
  f.store.importFiles({files:[{characterId:'character-01',kind:'voice',slot:'stage_1',extension:'wav',expectedHash:null,data:wav().toString('base64')}]});

@@ -263,3 +263,6 @@
 - 完整性：固定文件槽位、格式与大小检查、整批校验、旧哈希冲突保护、写入失败回滚；本机监听、令牌与同源限制，不暴露任意路径。缺素材不阻止游戏，缺语音静音，禁止系统朗读。新角色联机须重启 Node 服务。
 - 自动测试：Windows / Node.js v24.21.0，`node --test tests/asset-manager.test.cjs` 5 项通过，覆盖四副本同步、旧字节备份、整批拒绝、模拟磁盘失败回滚、录音别名／格式／时长、字幕、创建角色、本机 API 保护；`node tools/qa-assets-ui.cjs` 通过实际本机 API 的页面 DOM 保存流程，`node tools/qa-voice-import.cjs` 核验原 210 段录音哈希与播放路由通过。
 - 风险／人工：文件选择器、图片解码和声音听感尚未实机验收；页面草稿仅当前页内存保存。每次素材操作先本地备份，GitHub 为批次备份，并非每次点击自动提交。安装位置与操作说明见 RELEASE_NOTES_v8.md。
+
+
+- v8 素材管理补检：导出的完整游戏包初始不含 patch/，管理工具现在以实际游戏角色表识别目录，首次保存时创建 canonical 副本。Windows / Node.js v24.21.0，`node --test tests/asset-manager.test.cjs tests/v6-modules.test.cjs` 12 项通过（素材管理 6 项），覆盖全新解压目录直接导入；未要求用户手建 patch 目录。
