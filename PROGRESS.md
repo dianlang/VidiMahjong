@@ -286,3 +286,12 @@
 - 默认四项关闭；设备本地保存。自动过与禁止鸣牌绝不自动放弃荣和，立直摸切遇到自摸／暗杠／宣言待选时停下；暂停、弹窗、后台和断线时停止计时。必须在新服务器视图到达后重新判断，重复状态不会重复执行。确认选牌随手牌／回合变化失效，立直使用原确认，不重复确认。
 - Windows / Node.js v24.21.0：`node --test tests/play-policy.test.cjs` 2 项通过；`node tools/qa-play-options.cjs` 验证实际本地摸切、逐个本地真人过、荣和保留、二次确认与取消、原立直、联机自动过／摸切去重、重连等待、自摸／暗杠／暂停保护、设置保存。`node tools/qa-table-focus.cjs`、`node tools/qa-online-resume.cjs`、`node tools/qa-dom.cjs` 通过。无真人手机视觉／触控验收，不将 DOM 结果冒充实机。
 - 集成回归：同环境 `npm test` 59 项通过，含真实双客户端一手结束与点数守恒；随后连接恢复的自动操作收尾调整已由上述 DOM 场景验证。构建仍固定上游 e4207acd04887355c012ee2ab9d9456c4cbcb874，加载与 ZIP 核验见交付记录。
+
+## v8.1 临时好友试玩
+
+- 用户尚未购买云服务器，随后明确选择临时网页链接。新增 friend-server.cjs / friend-launcher.cjs / download-cloudflared.cjs / stop-friend-test.cjs、start/stop-friend-test.bat、friend-entry.js 及 patch 源。保持原 server/index.js 的房间路由，仅增加 HOST 环境变量供隔离绑定，默认原监听行为不变；无新游戏协议、计分或隐私状态字段。
+- 本机 8770 网关将静态游戏与 /ws 合用一个入口，经 Cloudflare 官方 Quick Tunnel 暂时分享；网页自动填 WSS，支持复制邀请和填房号。仅提供游戏文件，不开放素材管理 API、tools/server/patch/Git 或任意目录；音频支持 Range。关闭／重启试玩会丢失原内存房间和临时网址。
+- 下载从官方 release 查询 SHA-256；本机版本 cloudflared 2026.10.3，已校验官方散列。GitHub 直连与大文件官方接口尝试超时后，使用本机既有 Git 代理下载成功；未改系统代理或使用第三方文件镜像。二进制、运行会话和本机配置仅放忽略的 .local-tools/。
+- Windows / Node.js v24.21.0：`node --test tests/friend-server.test.cjs tests/play-policy.test.cjs tests/v6-modules.test.cjs` 9 项通过，含真实双客户端通过网关建房／入房／同步出牌、暗牌过滤、静态路径拒绝、Origin 检查与音频分段；`node tools/qa-friend-entry.cjs` 检查 HTTPS 自动 WSS、邀请填房号和复制通过。
+- 公网原型实际验证：通过本机已配置代理请求公开 HTTPS /healthz 返回 200；公开 WSS 双客户端建房、入房、出牌同步、暗牌过滤与点数总和 100000 均通过，记录在 release/。这不等于大陆所有运营商可用，朋友仍需实际试连；未宣称正式云部署完成。
+- 部署影响：前端与试玩工具一起更新；HOST 为可选绑定配置。原本机／联机入口仍保留，未替用户购买服务器，未启动公网素材管理。停止工具仅核对并停止当前项目记录且标记／启动时间匹配的进程。

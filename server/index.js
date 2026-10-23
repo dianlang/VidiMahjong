@@ -24,6 +24,7 @@ const { Room } = require('./room');
 const engineLib = require('./shared-engine');
 
 const PORT = process.env.PORT || 8080;
+const HOST = process.env.HOST || '0.0.0.0';
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I ambiguity
 
 const rooms = new Map(); // code -> Room
@@ -40,7 +41,7 @@ function send(ws, payload) {
   if (ws.readyState === 1) ws.send(JSON.stringify(payload));
 }
 
-const wss = new WebSocketServer({ port: PORT });
+const wss = new WebSocketServer({ port: PORT, host: HOST });
 
 wss.on('connection', (ws) => {
   let room = null;
