@@ -17,6 +17,10 @@ const checks=`
  };
  click('#btn-mode-local');click('#setup-screen [data-character-id="character-01"]');click('#btn-start-match');
  await new Promise(resolve=>setTimeout(resolve,1300));assert.ok(requests.some(p=>p.endsWith('/match_start.wav')));
+ const cue=d.querySelector('#character-voice-cue'),slot=d.querySelector('#qy-caption-slot');assert.equal(cue.parentElement,slot);assert.equal(slot.parentElement.className,'qy-sidebar');assert.equal(slot.previousElementSibling.id,'qy-featured');assert.equal(w.getComputedStyle(cue).position,'static');assert.equal(cue.closest('.qy-arena'),null);
+ const captionText=cue.textContent;w.innerWidth=700;w.dispatchEvent(new w.Event('resize'));assert.equal(slot.nextElementSibling.className,'qy-workspace');assert.equal(slot.parentElement.id,'table-screen');assert.equal(cue.textContent,captionText);
+ w.innerWidth=1280;w.dispatchEvent(new w.Event('resize'));assert.equal(slot.parentElement.className,'qy-sidebar');assert.equal(d.querySelectorAll('#character-voice-cue').length,1);
+
  w.qyFixture.current().scheduleAfter=()=>{};w.qyFixture.riichi();await new Promise(resolve=>setTimeout(resolve,100));
  assert.equal(requests.filter(p=>p.endsWith('/riichi.wav')).length,1);
  w.qyFixture.current().emit({type:'riichi',seat:0});await new Promise(resolve=>setTimeout(resolve,100));assert.equal(requests.filter(p=>p.endsWith('/riichi.wav')).length,1);
@@ -32,7 +36,7 @@ const checks=`
  const count=requests.filter(p=>p==='assets/characters/character-02/voice/pon.wav').length;assert.equal(count,1);
  w.qyFixture.online(state);w.qyFixture.online(state);await new Promise(resolve=>setTimeout(resolve,1300));assert.equal(requests.filter(p=>p.endsWith('/pon.wav')).length,count);
  assert.equal(overlaps,1);assert.equal(spoken,0);
- room.destroy();w.QueYeVoices.reset();assert.deepEqual(errors,[]);console.log('Voice event DOM PASS: real local riichi deduplication, consecutive queued stages without interruption, server-confirmed pon actor, repeated-state silence, one voice channel, no synthesis.');dom.window.close();
+ room.destroy();w.QueYeVoices.reset();assert.deepEqual(errors,[]);console.log('Voice event DOM PASS: real local riichi deduplication, consecutive queued stages without interruption, server-confirmed pon actor, repeated-state silence, one voice channel, responsive captions outside the arena, no synthesis.');dom.window.close();
 })().catch(e=>{console.error(e);process.exit(1);});
 `;
 const file=new Module(__filename,module);file.filename=__filename;file.paths=module.paths;

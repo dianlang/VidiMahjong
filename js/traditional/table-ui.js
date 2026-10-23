@@ -203,12 +203,28 @@
       syncPortraitSize();
     });
     featured.append(portraitTitle, figure, size);
-    sidebar.append(sideTitle, featured, scores, note);
+    const captionSlot = element('section', 'qy-caption-slot');
+    captionSlot.id = 'qy-caption-slot';
+    captionSlot.setAttribute('aria-label', '角色台词');
+    const cue = byId('character-voice-cue') || element('div', 'character-voice-cue');
+    cue.id = 'character-voice-cue';
+    cue.setAttribute('role', 'status');
+    cue.setAttribute('aria-live', 'polite');
+    captionSlot.append(cue);
+    sidebar.append(sideTitle, featured, captionSlot, scores, note);
     workspace.append(arena, sidebar);
     const footer = element('footer', 'qy-footer');
     footer.append(labeled(element('span'), 'note'), element('span', '', 'QUEYE / 立直麻将'));
     oldHeader.remove();
     table.replaceChildren(header, workspace, footer);
+    const placeCaption = () => {
+      if (window.innerWidth <= 950) {
+        if (captionSlot.nextElementSibling !== workspace) workspace.before(captionSlot);
+      } else if (captionSlot.parentElement !== sidebar) featured.after(captionSlot);
+    };
+    placeCaption();
+    setTimeout(placeCaption, 0);
+    window.addEventListener('resize', placeCaption);
     table.addEventListener('click', (event) => {
       const portrait = event.target.closest('.character-portrait');
       if (!portrait) return;

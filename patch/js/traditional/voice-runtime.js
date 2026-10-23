@@ -13,7 +13,7 @@
   function caption(id,event){
     const row=catalog.get(`${id}:${event}`);if(!row)return;
     let cue=document.getElementById('character-voice-cue');
-    if(!cue){cue=document.createElement('div');cue.id='character-voice-cue';cue.className='character-voice-cue';cue.setAttribute('role','status');cue.setAttribute('aria-live','polite');document.body.append(cue);}
+    if(!cue){cue=document.createElement('div');cue.id='character-voice-cue';cue.className='character-voice-cue';cue.setAttribute('role','status');cue.setAttribute('aria-live','polite');(document.getElementById('qy-caption-slot')||document.querySelector('.qy-sidebar')||document.body).append(cue);}
     cue.textContent=`${QueYeCharacters.get(id).name}：${row.textZh}`;cue.classList.add('is-visible');
   }
   function stop(){playing?.cancel();playing=null;document.getElementById('character-voice-cue')?.classList.remove('is-visible');}

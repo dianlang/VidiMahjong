@@ -341,7 +341,7 @@
       cue.className = 'character-voice-cue';
       cue.setAttribute('role', 'status');
       cue.setAttribute('aria-live', 'polite');
-      document.body.appendChild(cue);
+      (document.getElementById('qy-caption-slot') || document.querySelector('.qy-sidebar') || document.body).appendChild(cue);
     }
     cue.textContent = `${CHARACTER_NAMES[characterId] || '角色'}：${line}`;
     cue.classList.add('is-visible');

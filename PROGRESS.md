@@ -378,3 +378,12 @@
 - Windows / Node.js v24.21.0：`node tools/qa-river-highlight.cjs` 通过，覆盖本地四河、同牌精确匹配、无匹配、移出／键盘、鼠标不动时重绘、展开牌河、图像回退、联机座位旋转及清理。`node tools/qa-riichi-dora.cjs`、`node tools/qa-dom.cjs`、`node tools/qa-table-focus.cjs` 通过；`node --test tests/v6-modules.test.cjs` 6 项通过。DOM 测试不代替实机视觉验收。
 - 云端静态更新前，核对现有三个文件和发布清单散列，备份到 /opt/queye/backups/river-highlight-v8.4；先安装 JS／CSS 再原子替换同源 HTML，清单同步更新，服务 PID 保持 9365，未重启或关闭真人房间。`node release/qa-cloud-river-highlight.cjs` 从外网加载真正的 JS／CSS 与页面，验证启动完成、四家高亮和移出清除，无脚本错误。
 - 部署／交付：只需刷新页面，无服务端升级。源码、G 盘运行副本与 GitHub 按本批清单备份同步；固定 SHA 完整构建命令 `powershell -NoProfile -ExecutionPolicy Bypass -File ./build-from-upstream.ps1`，以及 `python tools/verify-build.py` 核验补丁／脚本顺序／交接文档及六个受保护文件。结果、备份和散列保存在 release/。
+
+
+## v8.5 台词避开手牌与牌河（2026-10-24）
+
+- 范围：table-ui.js、voice-runtime.js、zh-custom.js、zh-custom.css 与 canonical patch 副本，traditional.html／构建器缓存键，以及 qa-voice-events.cjs 的位置断言。普通角色台词使用独立 qy-caption-slot：大屏位于右侧立绘下方、分数列表前；950px 及以下移到牌桌外、workspace 上方。字幕取消 fixed、居中位移和高层覆盖，正常文档流预留空间，长句换行，缩放窗口移动同一节点而不清除文字或重播声音。
+- 规则／风险：仅普通字幕布局，不改语音触发／队列／录音时长、阶段演出、计分、角色或网络协议。原六个受保护文件不编辑。窄屏增加一行空间，真实屏幕上的滚动与视觉由用户确认；不宣称 DOM 验证就是实际几何验收。
+- Windows / Node.js v24.21.0：`node tools/qa-voice-events.cjs` 验证字幕单实例、静态定位、桌面置于立绘后、窄屏移到 arena 外、切回仍保留字幕，同时验证实际吃碰／立直事件与单通道。`node tools/qa-voice-playback.cjs`、`node tools/qa-table-focus.cjs`、`node tools/qa-dom.cjs` 通过；`node --test tests/v6-modules.test.cjs` 6 项通过。
+- 云端更新：五个静态文件上传前后核对散列，旧版本备份 /opt/queye/backups/caption-position-v8.5，按 JS／CSS→HTML 顺序原子安装并更新发布清单，Node PID 仍为 9365，未重启或关闭正在进行的房间。`node release/qa-cloud-caption-position.cjs` 从真正外网资源验证 v8.5 字幕布局结构和静态定位、响应式节点移动、牌河高亮仍可用、无页面脚本错误。
+- 部署影响／交付：刷新网页即可，无服务端升级。源码、G 盘及 GitHub 按模块同步；固定上游 SHA 完整构建 `powershell -NoProfile -ExecutionPolicy Bypass -File ./build-from-upstream.ps1`，再执行 `python tools/verify-build.py` 核验 canonical patch、加载顺序、文档和受保护文件。覆盖前备份／散列／验收记录留在 release/。

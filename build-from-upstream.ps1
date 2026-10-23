@@ -106,6 +106,7 @@ try {
     $html = $html.Replace('</head>', '<link rel="stylesheet" href="css/online-resume.css?v=8.2"><link rel="stylesheet" href="css/table-focus.css?v=8.2"><link rel="stylesheet" href="css/play-options.css?v=8.1"></head>')
     $html = $html.Replace('</body>', '<script src="js/traditional/play-policy.js?v=8.1"></script><script src="js/traditional/play-options.js?v=8.1"></script><script src="js/traditional/friend-entry.js?v=8.1"></script></body>')
     $html = $html.Replace('href="index.html"', 'href="traditional.html"')
+    $html = $html.Replace('css/zh-custom.css?v=3', 'css/zh-custom.css?v=8.5').Replace('js/traditional/zh-custom.js?v=7.3', 'js/traditional/zh-custom.js?v=8.5').Replace('js/traditional/table-ui.js?v=5.1', 'js/traditional/table-ui.js?v=8.5').Replace('js/traditional/voice-runtime.js?v=8.2', 'js/traditional/voice-runtime.js?v=8.5')
     # Static Chinese menu remains readable before synchronous scripts finish loading.
     $initialLabels = @{ tradSetupTitle = '四人立直麻将'; tradSetupSubtitle = '选择真人座位，其余座位由 AI 补位。'; playLocal = '本地对局'; playOnline = '在线联机'; howToPlay = '玩法说明'; backToMenu = '返回主菜单' }
     foreach ($key in $initialLabels.Keys) {
