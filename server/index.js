@@ -49,6 +49,8 @@ wss.on('connection', (ws) => {
     let msg;
     try { msg = JSON.parse(raw.toString()); } catch (e) { return; }
 
+    if (msg.type === 'ping' && Number.isSafeInteger(msg.pingId)) { send(ws, { type: 'pong', pingId: msg.pingId }); return; }
+
     if (!room) {
       if (msg.type === 'create') {
         const code = generateRoomCode();

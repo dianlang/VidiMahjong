@@ -246,3 +246,11 @@
 - 规则与素材：六个受保护文件、役种、计分、失分阈值与已有录音图片不变。风险为小屏滚动及布局，未宣称真实设备视觉验收。
 - 自动测试：Windows / Node.js v24.21.0，`node tools/qa-table-focus.cjs`、`node tools/qa-riichi-dora.cjs`、`node tools/qa-stage-show.cjs`、`node tools/qa-score-show.cjs`、`node tools/qa-dom.cjs` 通过；核对原按钮迁移、立直选择、暂停恢复、当前公开牌与连接提示。DOM 桩不能替代人工视觉／触控验收。
 - 部署：静态模块及缓存版本由构建器统一接入，不改支付方式。
+
+
+## v8 自动重连（2026-10-23，用户选项 4）
+
+- 范围／文件：reconnect-client.js、online-resume.js、server/reconnect-view.js 与 patch 副本，server/index.js 的心跳、server/room.js 的扩展安装；新增重连逻辑／真实服务器测试和 qa-online-resume.cjs。原六个受保护文件不变。
+- 行为：自动退避重连、手动重试、同标签刷新恢复；恢复原 playerId／座位／权威角色与阶段，重建本人待处理吃碰提示。连接恢复前阻止行动，绝不缓存补发出牌或吃碰，旧连接延迟消息失效。
+- 协议／隐私：仅本人 reactionPrompt，其他席位为 null，不附他人暗牌；新增 ping/pong。服务器仍负责计分、角色与演出剩余时间。前后端必须同版本并重启 Node 服务；不擅自关闭旧服务或原房间。房间已被清理时提示返回大厅。
+- 自动测试：Windows / Node.js v24.21.0，`node --test tests/reconnect-client.test.cjs tests/reconnect-server.test.cjs` 5 项通过；真实 WebSocket 测试恢复本人反应选项、累计失分、变身身份与暂停剩余时间。`node tools/qa-online-resume.cjs`、`node tools/qa-table-focus.cjs` 通过。尚未真人多窗口整场和真实网络切换验收；DOM 结果不等于这些验收。

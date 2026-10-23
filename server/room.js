@@ -230,3 +230,5 @@ require('./riichi-actions.js').install(Room);
 require('./voice-events.js').install(Room);
 
 require('./random-character.js').install(Room);
+
+require('./reconnect-view.js').install(Room);
