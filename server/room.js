@@ -232,3 +232,5 @@ require('./voice-events.js').install(Room);
 require('./random-character.js').install(Room);
 
 require('./reconnect-view.js').install(Room);
+
+require('./settlement-confirm.js').install(Room);

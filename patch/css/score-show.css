@@ -10,3 +10,12 @@
 .qy-score-count-row.is-gain b { color:#bcd998; }
 .qy-score-show>p { color:#93ac84; font:11px "Microsoft YaHei",sans-serif; text-align:center; margin:24px 0 0; }
 @media(max-width:600px) { .qy-score-show{padding:22px}.qy-score-show h2{font-size:25px}.qy-score-count-row{grid-template-columns:1fr 1fr 70px;gap:6px}.qy-score-count-row strong{font-size:25px} }
+
+.qy-score-show.is-ron { border-color:#e38e70; background:radial-gradient(ellipse at top,#562e29,#1e191b 75%); }
+.qy-deal-in-impact { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:12px; padding:16px 8px 22px; color:#ffb79e; animation:qy-deal-impact .6s ease-out both; }
+.qy-deal-in-impact strong { font:700 46px "Microsoft YaHei",sans-serif; letter-spacing:8px; text-shadow:0 0 24px #e35f4977; }
+.qy-deal-in-impact span { font-size:19px; }.qy-deal-in-impact b { font:26px Georgia,serif; }
+.qy-score-count-row.is-deal-in { background:#d4593522; border-left:3px solid #e58d72; padding-left:10px; }
+.qy-settlement-ready { color:#d7c79e; line-height:1.8; font-size:13px; margin:18px 0; }
+@keyframes qy-deal-impact { from{opacity:0;transform:scale(1.08)}to{opacity:1;transform:scale(1)} }
+@media(prefers-reduced-motion:reduce){.qy-deal-in-impact{animation:none}}

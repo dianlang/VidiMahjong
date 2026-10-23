@@ -316,3 +316,12 @@
 - 放铳录音从阶段后低优先级提升为紧随荣和的公开角色反应；跳过只显示字幕。自动播放被阻止时等待点击重试，不把浏览器限制误判为缺文件并连续换格式。
 - Windows / Node.js v24.21.0：`node tools/qa-voice-playback.cjs`、`node tools/qa-voice-events.cjs`、`node tools/qa-voice-import.cjs`、`node tools/qa-stage-show.cjs`、`node tools/qa-random-character.cjs` 通过，含慢加载、其他角色、不中断、无重叠、210 原录音散列及缺录音静音。Audio 桩不是实机解码或听感验收。
 - 风险：长录音可能延续到视觉演出结束后，后续语音等待；过期且未开始的录音丢弃防止积压。用户取消串角调查，本轮未改角色分配／演出绑定及素材。
+
+
+## v8.2 放铳反馈与全员确认（2026-10-23）
+
+- 范围／授权：用户明确选择所有真人确认后下一局。新增 server/settlement-confirm.js 及 patch 源、room 安装点、score-show.js／css 及 patch 副本、settlement-confirm 测试。服务器新增 settlementReady 状态和 confirmSettlement 消息，只从真实连接识别席位；忽略过期、伪造／重复确认，机器人免确认，离线真人等待重连，确认状态保留。
+- 已有权威支付与六个受保护文件不变。全员确认且阶段演出结束后才推进；旧 nextHand 在新服务中只确认本人。前端持续显示人数和待确认席位，阻止原按钮同时执行本地空 match 的监听器；重复状态只更新进度，不重复弹窗。
+- 荣和动画明确显示放铳角色与实际扣分，先停留提示再滚动；正常明细至少等待 2.8 秒，自摸至少 1.9 秒，并等待和牌／放铳声音和阶段演出。之后通过确认按钮继续。
+- Windows / Node.js v24.21.0：完整 `npm test` 63 项通过；后续补充旧结算 ID／本地按钮清理／主菜单修复以 `node --test tests/settlement-confirm.test.cjs tests/stage-presentation.test.cjs tests/v6-modules.test.cjs` 13 项、`node tools/qa-score-show.cjs`、`node tools/qa-online-ui.cjs` 通过。双页面真实隔离 WebSocket 场景覆盖自摸和荣和、双方结算、放铳音频路径、演出后弹窗、各自确认和自动下一手；未宣称真实设备试听或四真人整场验收。
+- 部署影响：前后端同版本更新，必须重启 Node 服务才启用全员确认。旧服务器仍走旧下一局；当前 G 盘真人房间尚未被关闭。断线不自动确认，需原玩家重连。
