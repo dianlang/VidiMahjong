@@ -254,3 +254,12 @@
 - 行为：自动退避重连、手动重试、同标签刷新恢复；恢复原 playerId／座位／权威角色与阶段，重建本人待处理吃碰提示。连接恢复前阻止行动，绝不缓存补发出牌或吃碰，旧连接延迟消息失效。
 - 协议／隐私：仅本人 reactionPrompt，其他席位为 null，不附他人暗牌；新增 ping/pong。服务器仍负责计分、角色与演出剩余时间。前后端必须同版本并重启 Node 服务；不擅自关闭旧服务或原房间。房间已被清理时提示返回大厅。
 - 自动测试：Windows / Node.js v24.21.0，`node --test tests/reconnect-client.test.cjs tests/reconnect-server.test.cjs` 5 项通过；真实 WebSocket 测试恢复本人反应选项、累计失分、变身身份与暂停剩余时间。`node tools/qa-online-resume.cjs`、`node tools/qa-table-focus.cjs` 通过。尚未真人多窗口整场和真实网络切换验收；DOM 结果不等于这些验收。
+
+
+## v8 素材管理（2026-10-23，用户选项 5）
+
+- 范围／文件：素材管理页面 HTML／CSS／JS、asset-entry.js、start-asset-manager.bat、tools/asset-store.cjs 与 asset-manager-server.cjs 及 patch 源；voice-runtime.js 按素材目录优先播放最新导入格式；asset-manager.test.cjs 与 qa-assets-ui.cjs。
+- 功能：按角色预览立绘与缺失槽位，试听 35 种配音、批量 PNG／WAV／MP3／OGG 导入、中日台词保存与新增角色。每次覆盖前备份字节与清单，保存同步现用 assets 与 canonical patch/assets；本机配置关联 C 盘源码与 G:\QueYe，不进入 Git。备份位置 release/asset-manager，不改 E 盘原生成工具与录音输出。
+- 完整性：固定文件槽位、格式与大小检查、整批校验、旧哈希冲突保护、写入失败回滚；本机监听、令牌与同源限制，不暴露任意路径。缺素材不阻止游戏，缺语音静音，禁止系统朗读。新角色联机须重启 Node 服务。
+- 自动测试：Windows / Node.js v24.21.0，`node --test tests/asset-manager.test.cjs` 5 项通过，覆盖四副本同步、旧字节备份、整批拒绝、模拟磁盘失败回滚、录音别名／格式／时长、字幕、创建角色、本机 API 保护；`node tools/qa-assets-ui.cjs` 通过实际本机 API 的页面 DOM 保存流程，`node tools/qa-voice-import.cjs` 核验原 210 段录音哈希与播放路由通过。
+- 风险／人工：文件选择器、图片解码和声音听感尚未实机验收；页面草稿仅当前页内存保存。每次素材操作先本地备份，GitHub 为批次备份，并非每次点击自动提交。安装位置与操作说明见 RELEASE_NOTES_v8.md。

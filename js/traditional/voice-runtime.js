@@ -24,7 +24,8 @@
       if(!stage)caption(id,event);
       if(!enabled()){const timer=setTimeout(resolve,500);playing={cancel(){clearTimeout(timer);resolve();}};return;}
       let audio=null,done=false,attempt=0,linger=null;const startedAt=Date.now();
-      const extensions=['wav','mp3','ogg'];
+      const preferred=row.path?.match(/\.(wav|mp3|ogg)$/)?.[1]||'wav';
+      const extensions=[...new Set([preferred,'wav','mp3','ogg'])];
       const timer=setTimeout(finish,Math.min(limit,Math.max(1500,(row.durationSeconds||4)*1000+500)));
       function finish(cancel=false){
         if(done){if(cancel){clearTimeout(linger);resolve();}return;}
