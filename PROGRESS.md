@@ -333,3 +333,12 @@
 - Windows / Node.js v24.21.0／Python 3／Windows PowerShell：`powershell -NoProfile -ExecutionPolicy Bypass -File ./build-from-upstream.ps1`、`python tools/verify-build.py` 实际执行通过；ZIP 核对全 canonical patch、服务器扩展、脚本顺序、交接文档，六个受保护文件与固定上游逐字节一致。交付记录和 ZIP SHA-256 保存在 release/。
 - 同环境 `node tools/qa-dom.cjs`、`node tools/qa-friend-entry.cjs`、`node tools/qa-play-options.cjs` 通过；完整及专项测试见上面各模块。没有未解决的自动失败项；真实浏览器视觉、手机、实际试听、多真人整场仍未验收。
 - G:\QueYe 与修改前 Git HEAD 的 884 个跟踪文件核对未发现用户另改素材／代码。先准备新包、源码备份及有旧哈希保护的覆盖清单；G 盘文件与现有临时服务暂维持旧版，等待用户允许关闭当前房间后同步启用，不能把未重启写成已上线。
+
+
+## v8.2 迁移启动（2026-10-23）
+
+- 用户随后明确要求“关闭现有房间，马上移到服务器上”。已运行 `node tools/stop-friend-test.cjs`（G:\QueYe，Windows / Node.js v24.21.0），核验本项目进程标记后关闭临时隧道、网关和内存房间；没有重新创建临时链接。
+- 已执行 `powershell -NoProfile -ExecutionPolicy Bypass -File ./release/apply-v8.2.ps1`：覆盖前核对旧哈希、打包旧文件、同步 31 个文件并核对新哈希。G 盘已是新版文件；备份 release/QueYe-before-v8.2.zip，清单和同步报告同目录。
+- G:\QueYe / Windows / Node.js v24.21.0 执行 `node --test tests/settlement-confirm.test.cjs tests/stage-presentation.test.cjs tests/v6-modules.test.cjs tests/reconnect-server.test.cjs tests/voice-events.test.cjs`：20 项通过。声音／视觉人工限制沿用上面记录。
+- 源码模块已推送 GitHub main（b500003），远端 API 核实同提交；收尾交接文档另行提交。完整构建及受保护文件校验通过，最终 ZIP 散列在 release/，不是已完成云部署的证明。
+- 云迁移当前等用户购买／提供服务器公网 IP、SSH 用户与端口或已配置别名，以及域名。已建议 Ubuntu Server 24.04 LTS x86_64 纯净系统镜像；没有服务器连接信息，尚未上传、安装或宣称云端上线。
